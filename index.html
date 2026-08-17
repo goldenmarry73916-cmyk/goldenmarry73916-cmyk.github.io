@@ -1,14 +1,111 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Wallora - HD Wallpapers</title>
-</head>
-<body>
-  <h1>Wallora</h1>
-  <p>HD Wallpapers</p>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wallora - HD Wallpapers</title>
 
-  <h2>Latest Wallpapers</h2>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-  <p>Yahan hum tumhare wallpapers add karenge.</p>
-</body>
-</html>
+body {
+  font-family: Arial, sans-serif;
+  background: #0b0b0f;
+  color: white;
+}
+
+header {
+  padding: 25px 18px;
+  text-align: center;
+  background: linear-gradient(135deg, #15151d, #24243a);
+}
+
+.logo {
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.tagline {
+  margin-top: 8px;
+  color: #aaa;
+}
+
+.search {
+  margin: 20px auto;
+  max-width: 600px;
+}
+
+.search input {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 30px;
+  border: 1px solid #333;
+  background: #17171d;
+  color: white;
+  font-size: 16px;
+  outline: none;
+}
+
+.container {
+  padding: 25px 15px;
+  max-width: 1100px;
+  margin: auto;
+}
+
+h2 {
+  margin-bottom: 20px;
+}
+
+.wallpapers {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.card {
+  background: #17171d;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+}
+
+.card img {
+  width: 100%;
+  height: 230px;
+  object-fit: cover;
+  display: block;
+}
+
+.card-content {
+  padding: 12px;
+}
+
+.card h3 {
+  margin-bottom: 10px;
+}
+
+.download {
+  display: inline-block;
+  padding: 9px 14px;
+  background: white;
+  color: black;
+  text-decoration: none;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+footer {
+  text-align: center;
+  padding: 30px;
+  color: #777;
+}
+
+@media (min-width: 700px) {
+  .wallpapers {
+    grid
