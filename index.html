@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,29 +19,30 @@ body {
 }
 
 header {
-  padding: 25px 18px;
+  padding: 30px 18px;
   text-align: center;
   background: linear-gradient(135deg, #15151d, #24243a);
 }
 
 .logo {
-  font-size: 32px;
+  font-size: 34px;
   font-weight: bold;
 }
 
 .tagline {
   margin-top: 8px;
   color: #aaa;
+  font-size: 15px;
 }
 
 .search {
-  margin: 20px auto;
+  margin: 22px auto 0;
   max-width: 600px;
 }
 
 .search input {
   width: 100%;
-  padding: 14px 18px;
+  padding: 15px 20px;
   border-radius: 30px;
   border: 1px solid #333;
   background: #17171d;
@@ -52,7 +52,7 @@ header {
 }
 
 .container {
-  padding: 25px 15px;
+  padding: 28px 15px;
   max-width: 1100px;
   margin: auto;
 }
@@ -82,11 +82,12 @@ h2 {
 }
 
 .card-content {
-  padding: 12px;
+  padding: 13px;
 }
 
 .card h3 {
-  margin-bottom: 10px;
+  margin-bottom: 11px;
+  font-size: 16px;
 }
 
 .download {
@@ -102,10 +103,66 @@ h2 {
 
 footer {
   text-align: center;
-  padding: 30px;
+  padding: 35px 15px;
   color: #777;
 }
 
 @media (min-width: 700px) {
   .wallpapers {
-    grid
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">Wallora</div>
+  <div class="tagline">Premium HD Wallpapers</div>
+
+  <div class="search">
+    <input type="text" placeholder="🔍 Search wallpapers...">
+  </div>
+</header>
+
+<div class="container">
+
+  <h2>🔥 Latest Wallpapers</h2>
+
+  <div class="wallpapers">
+
+    <div class="card">
+      <img src="wallpaper.jpg" alt="Premium Wallpaper">
+      <div class="card-content">
+        <h3>Premium Wallpaper</h3>
+        <a class="download" href="wallpaper.jpg" download>Download</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="wallpaper.jpg" alt="HD Wallpaper">
+      <div class="card-content">
+        <h3>HD Wallpaper</h3>
+        <a class="download" href="wallpaper.jpg" download>Download</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="wallpaper.jpg" alt="Beautiful Wallpaper">
+      <div class="card-content">
+        <h3>Beautiful Wallpaper</h3>
+        <a class="download" href="wallpaper.jpg" download>Download</a>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<footer>
+  © 2026 Wallora • HD Wallpapers
+</footer>
+
+</body>
+</html>
