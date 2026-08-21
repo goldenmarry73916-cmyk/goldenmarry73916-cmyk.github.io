@@ -1,57 +1,73 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wallora - Wallpapers</title>
+
+<title>Wallora - Premium Wallpapers</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
 
 body{
   font-family:Arial,sans-serif;
-  background:#08080c;
+  background:#07070b;
   color:white;
 }
 
+/* HEADER */
 header{
   text-align:center;
-  padding:30px 15px;
-  background:linear-gradient(135deg,#11111a,#24243a);
+  padding:45px 15px 35px;
+  background:
+    radial-gradient(circle at top,#34345a,#11111a 55%,#07070b);
+  border-bottom:1px solid #292936;
 }
 
 .logo{
-  font-size:36px;
-  font-weight:bold;
+  font-size:42px;
+  font-weight:800;
+  letter-spacing:2px;
 }
 
 .tagline{
   color:#aaa;
-  margin:8px 0 20px;
+  margin:10px 0 25px;
+  font-size:14px;
 }
 
+/* SEARCH */
 .search{
-  max-width:600px;
+  max-width:650px;
   margin:auto;
 }
 
 .search input{
   width:100%;
-  padding:15px 20px;
+  padding:16px 22px;
   border-radius:30px;
   border:1px solid #444;
   background:#15151c;
   color:white;
   font-size:16px;
   outline:none;
+  box-shadow:0 8px 30px rgba(0,0,0,.35);
 }
 
+.search input:focus{
+  border-color:#777;
+}
+
+/* CATEGORIES */
 .categories{
   display:flex;
   gap:10px;
   overflow-x:auto;
-  padding:20px 15px;
+  padding:22px 15px;
   max-width:1100px;
   margin:auto;
 }
@@ -61,76 +77,110 @@ header{
   padding:10px 18px;
   border:1px solid #444;
   border-radius:25px;
-  background:#15151c;
+  background:#121219;
   color:white;
   cursor:pointer;
+  transition:.25s;
 }
 
 .categories button:hover{
   background:white;
   color:black;
+  transform:translateY(-2px);
 }
 
+/* CONTAINER */
 .container{
   max-width:1100px;
   margin:auto;
-  padding:10px 15px 40px;
+  padding:10px 15px 50px;
 }
 
 h2{
   margin:20px 0;
+  font-size:25px;
 }
 
+/* WALLPAPERS */
 .wallpapers{
   display:grid;
   grid-template-columns:repeat(2,1fr);
-  gap:15px;
+  gap:18px;
 }
 
 .card{
-  background:#15151c;
-  border-radius:16px;
+  background:linear-gradient(145deg,#181820,#101016);
+  border:1px solid #292933;
+  border-radius:18px;
   overflow:hidden;
+  transition:.3s;
+  box-shadow:0 10px 30px rgba(0,0,0,.35);
+}
+
+.card:hover{
+  transform:translateY(-5px);
+  border-color:#555;
+  box-shadow:0 15px 40px rgba(0,0,0,.55);
 }
 
 .card img{
   width:100%;
-  height:220px;
+  height:230px;
   object-fit:cover;
   display:block;
 }
 
+/* INFO */
 .info{
-  padding:13px;
+  padding:15px;
 }
 
 .info h3{
-  margin-bottom:10px;
+  margin-bottom:8px;
+  font-size:18px;
 }
 
 .category{
-  color:#999;
+  color:#888;
   font-size:13px;
-  margin-bottom:12px;
+  margin-bottom:14px;
 }
 
+/* DOWNLOAD */
 .download{
   display:inline-block;
-  padding:9px 15px;
-  border-radius:20px;
+  padding:10px 17px;
+  border-radius:22px;
   background:white;
   color:black;
   text-decoration:none;
   font-weight:bold;
   font-size:14px;
+  transition:.25s;
 }
 
+.download:hover{
+  transform:scale(1.05);
+}
+
+/* FOOTER */
 footer{
   text-align:center;
-  padding:30px;
-  color:#666;
+  padding:35px 15px;
+  border-top:1px solid #222;
+  color:#777;
 }
 
+footer h3{
+  color:white;
+  margin-bottom:8px;
+}
+
+footer strong{
+  color:#aaa;
+}
+
+/* DESKTOP */
 @media(min-width:700px){
   .wallpapers{
     grid-template-columns:repeat(3,1fr);
@@ -142,122 +192,314 @@ footer{
 <body>
 
 <header>
+
   <div class="logo">Wallora</div>
-  <div class="tagline">Anime • Cartoon • Dark • Laptop Wallpapers</div>
+
+  <div class="tagline">
+    Anime • Cartoon • Dark • Laptop Wallpapers
+  </div>
 
   <div class="search">
-    <input id="search" type="text" placeholder="🔍 Search wallpapers...">
+    <input
+      id="search"
+      type="text"
+      placeholder="🔍 Search wallpapers..."
+    >
   </div>
+
 </header>
 
+
 <div class="categories">
-  <button onclick="filterWallpapers('All')">All</button>
-  <button onclick="filterWallpapers('Anime')">🎌 Anime</button>
-  <button onclick="filterWallpapers('Cartoon')">🧸 Cartoon</button>
-  <button onclick="filterWallpapers('Dark')">🖤 Dark</button>
-  <button onclick="filterWallpapers('Laptop')">💻 Laptop</button>
+
+  <button onclick="filterWallpapers('All')">
+    All
+  </button>
+
+  <button onclick="filterWallpapers('Anime')">
+    🎌 Anime
+  </button>
+
+  <button onclick="filterWallpapers('Cartoon')">
+    🧸 Cartoon
+  </button>
+
+  <button onclick="filterWallpapers('Dark')">
+    🖤 Dark
+  </button>
+
+  <button onclick="filterWallpapers('Laptop')">
+    💻 Laptop
+  </button>
+
 </div>
 
+
 <div class="container">
-  <h2>🔥 Wallpapers</h2>
+
+  <h2>🔥 Premium Wallpapers</h2>
 
   <div class="wallpapers" id="wallpapers">
 
-    <div class="card" data-category="Anime" data-name="Dark Anime">
-      <img src="wallpaper.jpg" alt="Dark Anime Wallpaper">
+
+    <!-- WALLPAPER 1 -->
+
+    <div class="card"
+         data-category="Anime"
+         data-name="Dark Anime">
+
+      <img
+        src="wallpaper1.jpg"
+        alt="Dark Anime Wallpaper"
+      >
+
       <div class="info">
+
         <h3>Dark Anime</h3>
-        <div class="category">Anime</div>
-        <a class="download" href="wallpaper.jpg" download>Download</a>
+
+        <div class="category">
+          Anime
+        </div>
+
+        <a
+          class="download"
+          href="wallpaper1.jpg"
+          download
+        >
+          Download
+        </a>
+
       </div>
+
     </div>
 
-    <div class="card" data-category="Cartoon" data-name="Cartoon">
-      <img src="wallpaper1.jpg" alt="Cartoon Wallpaper">
+
+    <!-- WALLPAPER 2 -->
+
+    <div class="card"
+         data-category="Cartoon"
+         data-name="Cartoon">
+
+      <img
+        src="wallpaper2.jpg"
+        alt="Cartoon Wallpaper"
+      >
+
       <div class="info">
+
         <h3>Cartoon World</h3>
-        <div class="category">Cartoon</div>
-        <a class="download" href="wallpaper1.jpg" download>Download</a>
+
+        <div class="category">
+          Cartoon
+        </div>
+
+        <a
+          class="download"
+          href="wallpaper2.jpg"
+          download
+        >
+          Download
+        </a>
+
       </div>
+
     </div>
 
-    <div class="card" data-category="Dark" data-name="Dark">
-      <img src="wallpaper.jpg" alt="Dark Wallpaper">
+
+    <!-- WALLPAPER 3 -->
+
+    <div class="card"
+         data-category="Dark"
+         data-name="Dark">
+
+      <img
+        src="wallpaper3.jpg"
+        alt="Dark Wallpaper"
+      >
+
       <div class="info">
+
         <h3>Black Aesthetic</h3>
-        <div class="category">Dark</div>
-        <a class="download" href="wallpaper.jpg" download>Download</a>
+
+        <div class="category">
+          Dark
+        </div>
+
+        <a
+          class="download"
+          href="wallpaper3.jpg"
+          download
+        >
+          Download
+        </a>
+
       </div>
+
     </div>
 
-    <div class="card" data-category="Laptop" data-name="Laptop">
-      <img src="wallpaper.jpg" alt="Laptop Wallpaper">
+
+    <!-- WALLPAPER 4 -->
+
+    <div class="card"
+         data-category="Laptop"
+         data-name="Laptop">
+
+      <img
+        src="wallpaper4.jpg"
+        alt="Laptop Wallpaper"
+      >
+
       <div class="info">
+
         <h3>4K Laptop</h3>
-        <div class="category">Laptop</div>
-        <a class="download" href="wallpaper.jpg" download>Download</a>
+
+        <div class="category">
+          Laptop
+        </div>
+
+        <a
+          class="download"
+          href="wallpaper4.jpg"
+          download
+        >
+          Download
+        </a>
+
       </div>
+
     </div>
 
-    <div class="card" data-category="Anime" data-name="Samurai Anime">
-      <img src="wallpaper.jpg" alt="Samurai Anime">
+
+    <!-- WALLPAPER 5 -->
+
+    <div class="card"
+         data-category="Anime"
+         data-name="Samurai Anime">
+
+      <img
+        src="wallpaper5.jpg"
+        alt="Samurai Anime"
+      >
+
       <div class="info">
+
         <h3>Samurai Night</h3>
-        <div class="category">Anime</div>
-        <a class="download" href="wallpaper.jpg" download>Download</a>
+
+        <div class="category">
+          Anime
+        </div>
+
+        <a
+          class="download"
+          href="wallpaper5.jpg"
+          download
+        >
+          Download
+        </a>
+
       </div>
+
     </div>
 
-    <div class="card" data-category="Dark" data-name="Neon Dark">
-      <img src="wallpaper.jpg" alt="Neon Dark">
+
+    <!-- WALLPAPER 6 -->
+
+    <div class="card"
+         data-category="Dark"
+         data-name="Neon Dark">
+
+      <img
+        src="wallpaper6.jpg"
+        alt="Neon Dark"
+      >
+
       <div class="info">
+
         <h3>Neon Night</h3>
-        <div class="category">Dark</div>
-        <a class="download" href="wallpaper.jpg" download>Download</a>
+
+        <div class="category">
+          Dark
+        </div>
+
+        <a
+          class="download"
+          href="wallpaper6.jpg"
+          download
+        >
+          Download
+        </a>
+
       </div>
+
     </div>
 
   </div>
+
 </div>
 
+
 <footer>
-  © 2026 Wallora • Premium Wallpapers
+
+  <h3>Wallora</h3>
+
+  <p>Premium HD Wallpapers</p>
+
+  <p>
+    Founded by <strong>Deepak Paweria</strong>
+  </p>
+
+  <p>© 2026 Wallora</p>
+
 </footer>
 
+
 <script>
+
 const search = document.getElementById("search");
+
 const cards = document.querySelectorAll(".card");
 
+
 search.addEventListener("input", function(){
+
   const text = this.value.toLowerCase();
 
-  cards.forEach(card=>{
-    const name = card.dataset.name.toLowerCase();
-    const category = card.dataset.category.toLowerCase();
+  cards.forEach(card => {
+
+    const name =
+      card.dataset.name.toLowerCase();
+
+    const category =
+      card.dataset.category.toLowerCase();
 
     card.style.display =
-      name.includes(text) || category.includes(text)
+      name.includes(text) ||
+      category.includes(text)
       ? "block"
       : "none";
+
   });
+
 });
 
+
 function filterWallpapers(category){
-  cards.forEach(card=>{
+
+  cards.forEach(card => {
+
     card.style.display =
-      category === "All" || card.dataset.category === category
+      category === "All" ||
+      card.dataset.category === category
       ? "block"
       : "none";
+
   });
 
   search.value = "";
+
 }
+
 </script>
-<footer>
-  <h3>Wallora</h3>
-  <p>Premium HD Wallpapers</p>
-  <p>Founded by <strong>Deepak Paweria</strong></p>
-  <p>© 2026 Wallora</p>
-</footer>
+
 </body>
 </html>
