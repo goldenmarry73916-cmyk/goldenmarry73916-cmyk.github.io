@@ -1,0 +1,812 @@
+<script>
+
+/* =========================
+   GITHUB SETTINGS
+========================= */
+
+const GITHUB_USER = "goldenmarry73916-cmyk";
+const GITHUB_REPO = "goldenmarry73916-cmyk.github.io";
+const BRANCH = "main";
+
+
+let allWallpapers = [];
+let currentType = "all";
+let currentCategory = "all";
+
+
+/* =========================
+   MENU
+========================= */
+
+function openMenu(){
+
+ document
+ .getElementById("side")
+ .classList
+ .add("open");
+
+}
+
+
+function closeMenu(){
+
+ document
+ .getElementById("side")
+ .classList
+ .remove("open");
+
+}
+
+
+/* =========================
+   THEME
+========================= */
+
+function changeTheme(){
+
+ document.body
+ .classList
+ .toggle("light");
+
+ localStorage.setItem(
+  "walloraTheme",
+  document.body.classList.contains("light")
+  ? "light"
+  : "dark"
+ );
+
+}
+
+
+if(
+ localStorage.getItem("walloraTheme") === "light"
+){
+
+ document.body
+ .classList
+ .add("light");
+
+}
+
+
+/* =========================
+   GET GITHUB FILES
+========================= */
+
+async function getFiles(path){
+
+ const url =
+ `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${path}?ref=${BRANCH}`;
+
+ try{
+
+  const response = await fetch(url);
+
+  if(!response.ok){
+
+   return [];
+
+  }
+
+  const data = await response.json();
+
+  return Array.isArray(data) ? data : [];
+
+ }catch(error){
+
+  console.log("GitHub Error:",error);
+
+  return [];
+
+ }
+
+}
+
+
+/* =========================
+   CHECK IMAGE
+========================= */
+
+function isImage(file){
+
+ return(
+  file.type === "file" &&
+  /\.(jpg|jpeg|png|webp|gif)$/i.test(file.name)
+ );
+
+}
+
+
+/* =========================
+   ADD WALLPAPER
+========================= */
+
+function addWallpaper(file,type,category){
+
+ if(!isImage(file)){
+
+  return;
+
+ }
+
+
+ allWallpapers.push({
+
+  name:
+   file.name
+   .replace(/\.[^/.]+$/,"")
+   .replace(/[-_]/g," "),
+
+  type:type,
+
+  category:category,
+
+  url:file.download_url
+
+ });
+
+}
+
+
+/* =========================
+   LOAD WALLPAPERS
+========================= */
+
+async function loadWallpapers(){
+
+ /*
+  IMPORTANT:
+
+  ROOT FOLDER KO BILKUL READ NAHI KIYA JAYEGA.
+
+  Isliye root me rakhi koi bhi image
+  website par show nahi hogi.
+
+  Sirf neeche diye gaye folders scan honge.
+ */
+
+
+ allWallpapers = [];
+
+
+ const folders = [
+
+  /* MOBILE */
+
+  ["mobile/cartoon","mobile","cartoon"],
+
+  ["mobile/anime","mobile","anime"],
+
+  ["mobile/dark","mobile","dark"],
+
+  ["mobile/nature","mobile","nature"],
+
+  ["mobile/cars","mobile","cars"],
+
+  ["mobile/bike","mobile","bike"],
+
+
+  /* LAPTOP */
+
+  ["desktop","desktop","all"],
+
+
+  /* KEYBOARD */
+
+  ["keyboard","keyboard","all"]
+
+ ];
+
+
+ /*
+  Har folder ko separately load karo
+ */
+
+ for(const folder of folders){
+
+  const files = await getFiles(folder[0]);
+
+
+  files.forEach(file=>{
+
+   addWallpaper(
+    file,
+    folder[1],
+    folder[2]
+   );
+
+  });
+
+ }
+
+
+ /*
+  Starting page par koi wallpaper
+  automatically mix nahi hoga.
+
+  Pehle Mobile/Laptop/Keyboard
+  select karna hoga.
+ */
+
+ currentType = "none";
+ currentCategory = "all";
+
+
+ document.getElementById("galleryTitle")
+ .innerText = "Choose a Wallpaper Section";
+
+
+ document.getElementById("count")
+ .innerText = "Select a category";
+
+
+ document.getElementById("grid").innerHTML = `
+
+  <div class="empty">
+
+   <h3>Welcome to Wallora</h3>
+
+   <p style="margin-top:8px;">
+    Mobile, Laptop ya Keyboard section select karo.
+   </p>
+
+  </div>
+
+ `;
+
+}
+
+
+/* =========================
+   RENDER
+========================= */
+
+function render(list){
+
+ const grid =
+ document.getElementById("grid");
+
+ grid.innerHTML = "";
+
+
+ document.getElementById("count")
+ .innerText =
+ list.length + " Wallpapers";
+
+
+ if(list.length === 0){
+
+  grid.innerHTML = `
+
+   <div class="empty">
+
+    <h3>No wallpapers found</h3>
+
+    <p style="margin-top:8px;">
+     Is section ke correct GitHub folder me
+     wallpaper upload karo.
+    </p>
+
+   </div>
+
+  `;
+
+  return;
+
+ }
+
+
+ list.forEach(wallpaper=>{
+
+  const card =
+  document.createElement("div");
+
+  card.className = "card";
+
+
+  /*
+   HTML ko safe rakhne ke liye
+   URL ko direct attribute me set
+   karenge.
+  */
+
+  card.innerHTML = `
+
+   <img
+    src="${wallpaper.url}"
+    loading="lazy"
+    alt="${wallpaper.name}"
+   >
+
+   <div class="info">
+
+    <h3>
+     ${wallpaper.name}
+    </h3>
+
+    <div class="wallora-brand">
+     WALLORA
+    </div>
+
+    <div class="owner-name">
+     Deepak Paweria
+    </div>
+
+    <div class="actions">
+
+     <button
+      class="like"
+      onclick="likeWallpaper(this)"
+     >
+      ❤️ <span>0</span>
+     </button>
+
+     <button
+      class="comment"
+      onclick="toggleComments(this)"
+     >
+      💬
+     </button>
+
+     <a
+      class="download"
+      href="${wallpaper.url}"
+      download
+     >
+      Download
+     </a>
+
+    </div>
+
+    <div class="comments">
+
+     <input
+      type="text"
+      placeholder="Write a comment..."
+     >
+
+     <button
+      onclick="addComment(this)"
+     >
+      Post
+     </button>
+
+     <div class="comment-list"></div>
+
+    </div>
+
+   </div>
+
+  `;
+
+
+  /*
+   Image click
+  */
+
+  const image =
+  card.querySelector("img");
+
+  image.addEventListener(
+   "click",
+   function(){
+
+    openImage(wallpaper.url);
+
+   }
+  );
+
+
+  grid.appendChild(card);
+
+ });
+
+}
+
+
+/* =========================
+   FULL SCREEN IMAGE
+========================= */
+
+function openImage(url){
+
+ const viewer =
+ document.getElementById("imageViewer");
+
+ const image =
+ document.getElementById("fullImage");
+
+
+ image.src = url;
+
+ viewer.classList.add("show");
+
+}
+
+
+/* =========================
+   CLOSE IMAGE
+========================= */
+
+function closeImage(event){
+
+ if(event){
+
+  event.stopPropagation();
+
+ }
+
+ const viewer =
+ document.getElementById("imageViewer");
+
+ const image =
+ document.getElementById("fullImage");
+
+
+ viewer.classList.remove("show");
+
+ image.src = "";
+
+}
+
+
+/* =========================
+   ESC KEY
+========================= */
+
+document.addEventListener(
+ "keydown",
+ function(event){
+
+  if(event.key === "Escape"){
+
+   closeImage();
+
+  }
+
+ }
+);
+
+
+/* =========================
+   MOBILE SECTION
+========================= */
+
+function openMobile(){
+
+ document
+ .getElementById("mobileTypes")
+ .classList
+ .add("show");
+
+
+ currentType = "mobile";
+
+ currentCategory = "all";
+
+
+ document
+ .getElementById("galleryTitle")
+ .innerText =
+ "Mobile Wallpapers";
+
+
+ document
+ .querySelectorAll(".type-list button")
+ .forEach(
+  (btn,index)=>{
+
+   btn.classList.toggle(
+    "active",
+    index === 0
+   );
+
+  }
+ );
+
+
+ applyFilter();
+
+
+ /*
+  Gallery tak automatically scroll
+  kar do.
+ */
+
+ document
+ .querySelector(".gallery")
+ .scrollIntoView({
+  behavior:"smooth",
+  block:"start"
+ });
+
+}
+
+
+/* =========================
+   LAPTOP / KEYBOARD
+========================= */
+
+function openGallery(type){
+
+ document
+ .getElementById("mobileTypes")
+ .classList
+ .remove("show");
+
+
+ currentType = type;
+
+ currentCategory = "all";
+
+
+ if(type === "desktop"){
+
+  document
+  .getElementById("galleryTitle")
+  .innerText =
+  "Laptop Wallpapers";
+
+ }else{
+
+  document
+  .getElementById("galleryTitle")
+  .innerText =
+  "Keyboard Wallpapers";
+
+ }
+
+
+ applyFilter();
+
+
+ document
+ .querySelector(".gallery")
+ .scrollIntoView({
+  behavior:"smooth",
+  block:"start"
+ });
+
+}
+
+
+/* =========================
+   MOBILE FILTER
+========================= */
+
+function filterMobile(
+ category,
+ button
+){
+
+ currentType = "mobile";
+
+ currentCategory = category;
+
+
+ document
+ .querySelectorAll(".type-list button")
+ .forEach(
+  btn=>{
+   btn.classList.remove("active");
+  }
+ );
+
+
+ button.classList.add("active");
+
+
+ applyFilter();
+
+}
+
+
+/* =========================
+   FILTER
+========================= */
+
+function applyFilter(){
+
+ let list =
+ allWallpapers.filter(item=>{
+
+  /*
+   Sirf selected type
+  */
+
+  if(
+   currentType !== "all" &&
+   currentType !== "none" &&
+   item.type !== currentType
+  ){
+
+   return false;
+
+  }
+
+
+  /*
+   Mobile category
+  */
+
+  if(
+   currentType === "mobile" &&
+   currentCategory !== "all" &&
+   item.category !== currentCategory
+  ){
+
+   return false;
+
+  }
+
+
+  return true;
+
+ });
+
+
+ render(list);
+
+}
+
+
+/* =========================
+   SEARCH
+========================= */
+
+function searchWallpaper(){
+
+ const text =
+ document
+ .getElementById("search")
+ .value
+ .toLowerCase()
+ .trim();
+
+
+ /*
+  Search bhi current section ke andar
+  hi chalega.
+ */
+
+ let list =
+ allWallpapers.filter(item=>{
+
+  if(
+   currentType === "none"
+  ){
+
+   return false;
+
+  }
+
+
+  if(
+   currentType !== "all" &&
+   item.type !== currentType
+  ){
+
+   return false;
+
+  }
+
+
+  if(
+   currentType === "mobile" &&
+   currentCategory !== "all" &&
+   item.category !== currentCategory
+  ){
+
+   return false;
+
+  }
+
+
+  return item.name
+   .toLowerCase()
+   .includes(text);
+
+ });
+
+
+ render(list);
+
+}
+
+
+/* =========================
+   LIKE
+========================= */
+
+function likeWallpaper(button){
+
+ const number =
+ button.querySelector("span");
+
+ let value =
+ parseInt(number.innerText);
+
+
+ if(
+  button.classList.contains("liked")
+ ){
+
+  value--;
+
+  button.classList.remove("liked");
+
+ }else{
+
+  value++;
+
+  button.classList.add("liked");
+
+ }
+
+
+ number.innerText = value;
+
+}
+
+
+/* =========================
+   COMMENTS
+========================= */
+
+function toggleComments(button){
+
+ const area =
+ button
+ .closest(".info")
+ .querySelector(".comments");
+
+
+ area.classList.toggle("show");
+
+}
+
+
+function addComment(button){
+
+ const area =
+ button.closest(".comments");
+
+ const input =
+ area.querySelector("input");
+
+ const list =
+ area.querySelector(".comment-list");
+
+ const text =
+ input.value.trim();
+
+
+ if(!text){
+
+  return;
+
+ }
+
+
+ const div =
+ document.createElement("div");
+
+
+ div.innerText =
+ "💬 " + text;
+
+
+ list.appendChild(div);
+
+ input.value = "";
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+loadWallpapers();
+
+</script>
