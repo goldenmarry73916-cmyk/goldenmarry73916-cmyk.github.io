@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Wallora - Premium Wallpapers</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:Arial,sans-serif;
+  background:#07070b;
+  color:white;
+  transition:.3s;
+}
+
+body.light{
+  background:#f4f4f7;
+  color:#111;
+}
+
+body.light .card,
+body.light .search input,
+body.light .categories button{
+  background:#fff;
+  color:#111;
+  border-color:#ddd;
+}
+
+body.light .tagline,
+body.light .category{
+  color:#666;
+}
+
+body.light footer{
+  color:#777;
+}
+
+/* HEADER */
+
+header{
+  text-align:center;
+  padding:45px 15px 35px;
+  background:
+  radial-gradient(circle at top,#34345a,#11111a 55%,#07070b);
+  border-bottom:1px solid #292936;
+  position:relative;
+}
+
+.logo{
+  font-size:42px;
+  font-weight:800;
+  letter-spacing:2px;
+}
+
+.tagline{
+  color:#aaa;
+  margin:10px 0 25px;
+  font-size:14px;
+}
+
+/* MENU */
+
+.menu-btn{
+  position:absolute;
+  left:18px;
+  top:22px;
+  width:45px;
+  height:45px;
+  border-radius:12px;
+  border:1px solid #444;
+  background:#15151c;
+  color:white;
+  font-size:25px;
+  cursor:pointer;
+  z-index:10;
+}
+
+.side-menu{
+  position:fixed;
+  top:0;
+  left:-280px;
+  width:270px;
+  height:100%;
+  background:rgba(18,18,25,.97);
+  backdrop-filter:blur(15px);
+  border-right:1px solid #333;
+  padding:25px;
+  z-index:100;
+  transition:.35s;
+  box-shadow:10px 0 40px rgba(0,0,0,.5);
+}
+
+.side-menu.active{
+  left:0;
+}
+
+.side-menu h2{
+  margin-bottom:30px;
+}
+
+.side-menu button{
+  width:100%;
+  padding:13px;
+  margin:8px 0;
+  border-radius:12px;
+  border:1px solid #444;
+  background:#15151c;
+  color:white;
+  cursor:pointer;
+  text-align:left;
+}
+
+.side-menu button:hover{
+  background:white;
+  color:black;
+}
+
+.close{
+  float:right;
+  font-size:25px;
+  cursor:pointer;
+}
+
+/* SEARCH */
+
+.search{
+  max-width:650px;
+  margin:auto;
+}
+
+.search input{
+  width:100%;
+  padding:16px 22px;
+  border-radius:30px;
+  border:1px solid #444;
+  background:#15151c;
+  color:white;
+  font-size:16px;
+  outline:none;
+  box-shadow:0 8px 30px rgba(0,0,0,.35);
+}
+
+/* CATEGORIES */
+
+.categories{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  padding:22px 15px;
+  max-width:1100px;
+  margin:auto;
+}
+
+.categories button{
+  white-space:nowrap;
+  padding:10px 18px;
+  border:1px solid #444;
+  border-radius:25px;
+  background:#121219;
+  color:white;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.categories button:hover{
+  background:white;
+  color:black;
+  transform:translateY(-2px);
+}
+
+/* CONTAINER */
+
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:10px 15px 50px;
+}
+
+h2{
+  margin:20px 0;
+  font-size:25px;
+}
+
+/* WALLPAPERS */
+
+.wallpapers{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:18px;
+}
+
+.card{
+  background:linear-gradient(145deg,#181820,#101016);
+  border:1px solid #292933;
+  border-radius:18px;
+  overflow:hidden;
+  transition:.3s;
+  box-shadow:0 10px 30px rgba(0,0,0,.35);
+}
+
+.card:hover{
+  transform:translateY(-6px);
+  border-color:#666;
+  box-shadow:0 15px 40px rgba(0,0,0,.55);
+}
+
+.card img{
+  width:100%;
+  height:230px;
+  object-fit:cover;
+  display:block;
+}
+
+/* INFO */
+
+.info{
+  padding:15px;
+}
+
+.info h3{
+  margin-bottom:8px;
+  font-size:18px;
+}
+
+.category{
+  color:#888;
+  font-size:13px;
+  margin-bottom:14px;
+}
+
+/* DOWNLOAD */
+
+.download{
+  display:inline-block;
+  padding:10px 17px;
+  border-radius:22px;
+  background:white;
+  color:black;
+  text-decoration:none;
+  font-weight:bold;
+  font-size:14px;
+  transition:.25s;
+}
+
+.download:hover{
+  transform:scale(1.05);
+}
+
+/* FOOTER */
+
+footer{
+  text-align:center;
+  padding:35px 15px;
+  border-top:1px solid #222;
+  color:#777;
+}
+
+footer h3{
+  color:inherit;
+  margin-bottom:8px;
+}
+
+footer strong{
+  color:inherit;
+}
+
+/* DESKTOP */
+
+@media(min-width:700px){
+
+  .wallpapers{
+    grid-template-columns:repeat(3,1fr);
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDE MENU -->
+
+<div class="side-menu" id="sideMenu">
+
+  <span class="close" onclick="closeMenu()">×</span>
+
+  <h2>⚙️ Wallora</h2>
+
+  <button onclick="setDark()">
+    🌙 Dark Theme
+  </button>
+
+  <button onclick="setLight()">
+    ☀️ Light Theme
+  </button>
+
+  <button onclick="setAuto()">
+    🔄 Default Theme
+  </button>
+
+</div>
+
+
+<!-- HEADER -->
+
+<header>
+
+  <button class="menu-btn" onclick="openMenu()">
+    ☰
+  </button>
+
+  <div class="logo">
+    Wallora
+  </div>
+
+  <div class="tagline">
+    Anime • Cartoon • Dark • Laptop • Space • Cars • Nature
+  </div>
+
+  <div class="search">
+
+    <input
+      id="search"
+      type="text"
+      placeholder="🔍 Search wallpapers..."
+    >
+
+  </div>
+
+</header>
+
+
+<!-- CATEGORIES -->
+
+<div class="categories">
+
+  <button onclick="filterWallpapers('All')">
+    All
+  </button>
+
+  <button onclick="filterWallpapers('Anime')">
+    🎌 Anime
+  </button>
+
+  <button onclick="filterWallpapers('Cartoon')">
+    🧸 Cartoon
+  </button>
+
+  <button onclick="filterWallpapers('Dark')">
+    🖤 Dark
+  </button>
+
+  <button onclick="filterWallpapers('Laptop')">
+    💻 Laptop
+  </button>
+
+  <button onclick="filterWallpapers('Space')">
+    🌌 Space
+  </button>
+
+  <button onclick="filterWallpapers('Cars')">
+    🚗 Cars
+  </button>
+
+  <button onclick="filterWallpapers('Nature')">
+    🌿 Nature
+  </button>
+
+  <button onclick="filterWallpapers('City')">
+    🌃 City
+  </button>
+
+  <button onclick="filterWallpapers('Mountain')">
+    🏔️ Mountain
+  </button>
+
+  <button onclick="filterWallpapers('Universe')">
+    🌌 Universe
+  </button>
+
+</div>
+
+
+<!-- WALLPAPERS -->
+
+<div class="container">
+
+  <h2>🔥 Premium Wallpapers</h2>
+
+  <div class="wallpapers" id="wallpapers"></div>
+
+</div>
+
+
+<!-- FOOTER -->
+
+<footer>
+
+  <h3>Wallora</h3>
+
+  <p>Premium HD Wallpapers</p>
+
+  <p>
+    Founded by <strong>Deepak Paweria</strong>
+  </p>
+
+  <p>
+    © 2026 Wallora
+  </p>
+
+</footer>
+
+
+<script>
+
+/* CATEGORIES */
+
+const categories = [
+  "Anime",
+  "Cartoon",
+  "Dark",
+  "Laptop",
+  "Space",
+  "Cars",
+  "Nature",
+  "City",
+  "Mountain",
+  "Universe"
+];
+
+
+/* CREATE WALLPAPERS */
+
+const wallpaperContainer =
+  document.getElementById("wallpapers");
+
+let allCards = [];
+
+
+categories.forEach(category => {
+
+  const folderName =
+    category.toLowerCase();
+
+  for(let i = 1; i <= 300; i++){
+
+    const fileName =
+      folderName + i + ".jpg";
+
+    const card =
+      document.createElement("div");
+
+    card.className = "card";
+
+    card.dataset.category =
+      category;
+
+    card.dataset.name =
+      category + " Wallpaper " + i;
+
+    card.innerHTML = `
+
+      <img
+        src="${fileName}"
+        alt="${category} Wallpaper ${i}"
+        loading="lazy"
+        onerror="this.parentElement.style.display='none'"
+      >
+
+      <div class="info">
+
+        <h3>
+          ${category} Wallpaper ${i}
+        </h3>
+
+        <div class="category">
+          ${category}
+        </div>
+
+        <a
+          class="download"
+          href="${fileName}"
+          download
+        >
+          Download
+        </a>
+
+      </div>
+
+    `;
+
+    wallpaperContainer.appendChild(card);
+
+    allCards.push(card);
+
+  }
+
+});
+
+
+/* MENU */
+
+function openMenu(){
+
+  document
+    .getElementById("sideMenu")
+    .classList.add("active");
+
+}
+
+function closeMenu(){
+
+  document
+    .getElementById("sideMenu")
+    .classList.remove("active");
+
+}
+
+
+/* THEME */
+
+function setDark(){
+
+  document.body.classList.remove("light");
+
+  closeMenu();
+
+}
+
+function setLight(){
+
+  document.body.classList.add("light");
+
+  closeMenu();
+
+}
+
+function setAuto(){
+
+  document.body.classList.remove("light");
+
+  closeMenu();
+
+}
+
+
+/* SEARCH */
+
+const search =
+  document.getElementById("search");
+
+
+search.addEventListener(
+  "input",
+  function(){
+
+    const text =
+      this.value.toLowerCase();
+
+    allCards.forEach(card => {
+
+      const name =
+        card.dataset.name.toLowerCase();
+
+      const category =
+        card.dataset.category.toLowerCase();
+
+      card.style.display =
+        name.includes(text) ||
+        category.includes(text)
+        ? "block"
+        : "none";
+
+    });
+
+  }
+);
+
+
+/* CATEGORY FILTER */
+
+function filterWallpapers(category){
+
+  allCards.forEach(card => {
+
+    card.style.display =
+      category === "All" ||
+      card.dataset.category === category
+      ? "block"
+      : "none";
+
+  });
+
+  search.value = "";
+
+}
+
+</script>
+
+</body>
+</html>
