@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wallora - Premium Wallpapers</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+ --bg:#070707;
+ --card:#111;
+ --text:#fff;
+ --muted:#999;
+ --border:#292929;
+ --gold:#ffb300;
+}
+
+body{
+ font-family:Arial,Helvetica,sans-serif;
+ background:var(--bg);
+ color:var(--text);
+ transition:.3s;
+}
+
+body.light{
+ --bg:#f5f5f5;
+ --card:#fff;
+ --text:#111;
+ --muted:#666;
+ --border:#ddd;
+}
+
+header{
+ position:sticky;
+ top:0;
+ z-index:1000;
+ height:70px;
+ padding:0 5%;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ background:rgba(7,7,7,.95);
+ backdrop-filter:blur(12px);
+ border-bottom:1px solid var(--border);
+}
+
+body.light header{background:rgba(255,255,255,.95)}
+
+.logo{
+ font-size:29px;
+ font-weight:800;
+}
+
+.logo span{color:var(--gold)}
+
+.menu-btn{
+ width:45px;
+ height:45px;
+ border:1px solid var(--border);
+ border-radius:12px;
+ background:var(--card);
+ display:flex;
+ flex-direction:column;
+ justify-content:center;
+ align-items:center;
+ gap:5px;
+ cursor:pointer;
+}
+
+.menu-btn span{
+ width:21px;
+ height:2px;
+ background:var(--text);
+}
+
+.side{
+ position:fixed;
+ right:-330px;
+ top:0;
+ width:310px;
+ height:100vh;
+ z-index:2000;
+ background:var(--card);
+ border-left:1px solid var(--border);
+ padding:22px;
+ transition:.3s;
+ box-shadow:-10px 0 40px #0005;
+}
+
+.side.open{right:0}
+
+.close{
+ text-align:right;
+ font-size:30px;
+ cursor:pointer;
+}
+
+.side h2{margin-top:25px;margin-bottom:10px}
+.side p{color:var(--muted);line-height:1.6}
+
+.owner{
+ margin-top:25px;
+ padding:18px;
+ border:1px solid var(--border);
+ border-radius:15px;
+}
+
+.owner strong{color:var(--gold)}
+
+.theme{
+ width:100%;
+ margin-top:20px;
+ padding:13px;
+ border:0;
+ border-radius:10px;
+ background:var(--gold);
+ color:#000;
+ font-weight:bold;
+ cursor:pointer;
+}
+
+.hero{
+ text-align:center;
+ padding:60px 20px 35px;
+}
+
+.hero h1{
+ font-size:50px;
+}
+
+.hero h1 span{color:var(--gold)}
+
+.hero p{
+ color:var(--muted);
+ margin-top:12px;
+}
+
+.search{
+ max-width:650px;
+ margin:25px auto 0;
+}
+
+.search input{
+ width:100%;
+ padding:16px 20px;
+ border-radius:30px;
+ border:1px solid var(--border);
+ background:var(--card);
+ color:var(--text);
+ outline:none;
+ font-size:15px;
+}
+
+.categories{
+ padding:20px 6% 35px;
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:20px;
+}
+
+.category{
+ background:var(--card);
+ border:1px solid var(--border);
+ border-radius:18px;
+ padding:28px 20px;
+ text-align:center;
+ cursor:pointer;
+ transition:.25s;
+}
+
+.category:hover{
+ transform:translateY(-5px);
+ border-color:var(--gold);
+}
+
+.category .icon{
+ font-size:42px;
+ margin-bottom:12px;
+}
+
+.category h2{font-size:20px}
+.category p{
+ color:var(--muted);
+ margin-top:7px;
+ font-size:13px;
+}
+
+.mobile-types{
+ display:none;
+ padding:0 6% 30px;
+}
+
+.mobile-types.show{display:block}
+
+.mobile-types h2{margin-bottom:15px}
+
+.type-list{
+ display:flex;
+ gap:10px;
+ overflow-x:auto;
+ padding-bottom:5px;
+}
+
+.type-list button{
+ white-space:nowrap;
+ padding:11px 18px;
+ border:1px solid var(--border);
+ border-radius:25px;
+ background:var(--card);
+ color:var(--text);
+ cursor:pointer;
+}
+
+.type-list button.active,
+.type-list button:hover{
+ background:var(--gold);
+ color:#000;
+}
+
+.gallery{
+ padding:10px 6% 50px;
+}
+
+.gallery-head{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin-bottom:20px;
+}
+
+.gallery-head h2{font-size:25px}
+.gallery-head span{
+ color:var(--muted);
+ font-size:13px;
+}
+
+.grid{
+ display:grid;
+ grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
+ gap:18px;
+}
+
+.card{
+ background:var(--card);
+ border:1px solid var(--border);
+ border-radius:16px;
+ overflow:hidden;
+ transition:.25s;
+}
+
+.card:hover{
+ transform:translateY(-5px);
+ border-color:var(--gold);
+}
+
+.card img{
+ width:100%;
+ height:275px;
+ object-fit:cover;
+ display:block;
+}
+
+.info{padding:12px}
+
+.info h3{
+ font-size:14px;
+ margin-bottom:11px;
+ white-space:nowrap;
+ overflow:hidden;
+ text-overflow:ellipsis;
+}
+
+.actions{
+ display:flex;
+ gap:7px;
+}
+
+.like,.comment{
+ border:0;
+ border-radius:8px;
+ padding:9px 11px;
+ background:#252525;
+ color:#fff;
+ cursor:pointer;
+}
+
+.like.liked{background:#e53935}
+
+.download{
+ flex:1;
+ padding:9px;
+ border-radius:8px;
+ background:var(--gold);
+ color:#000;
+ text-align:center;
+ text-decoration:none;
+ font-size:12px;
+ font-weight:bold;
+}
+
+.comments{
+ display:none;
+ margin-top:10px;
+}
+
+.comments.show{display:block}
+
+.comments input{
+ width:100%;
+ padding:9px;
+ border:1px solid var(--border);
+ border-radius:8px;
+ background:var(--bg);
+ color:var(--text);
+ outline:none;
+}
+
+.comments button{
+ margin-top:6px;
+ padding:8px 12px;
+ border:0;
+ border-radius:7px;
+ background:var(--gold);
+ cursor:pointer;
+}
+
+.comment-list{
+ margin-top:8px;
+ font-size:12px;
+ color:var(--muted);
+}
+
+.empty{
+ text-align:center;
+ padding:50px 20px;
+ color:var(--muted);
+}
+
+footer{
+ padding:30px;
+ text-align:center;
+ border-top:1px solid var(--border);
+ color:var(--muted);
+}
+
+footer strong{color:var(--gold)}
+
+@media(max-width:700px){
+ header{padding:0 4%}
+ .logo{font-size:24px}
+ .hero{padding:45px 15px 30px}
+ .hero h1{font-size:38px}
+ .categories{
+  grid-template-columns:1fr;
+  padding:20px 4%;
+ }
+ .category{
+  display:flex;
+  align-items:center;
+  text-align:left;
+  gap:15px;
+  padding:20px;
+ }
+ .category .icon{
+  margin:0;
+  font-size:34px;
+ }
+ .mobile-types{padding:0 4% 25px}
+ .gallery{padding:10px 4% 40px}
+ .grid{
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+ }
+ .card img{height:230px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+ <div class="logo">Wall<span>ora</span></div>
+
+ <button class="menu-btn" onclick="openMenu()">
+  <span></span>
+  <span></span>
+  <span></span>
+ </button>
+</header>
+
+<div class="side" id="side">
+
+ <div class="close" onclick="closeMenu()">×</div>
+
+ <h2>Wallora Menu</h2>
+
+ <p>
+ Premium wallpapers for mobile phones,
+ desktops and keyboards.
+ </p>
+
+ <div class="owner">
+  <p>Site Owner</p>
+  <h3>👤 <strong>Deepak Paweria</strong></h3>
+ </div>
+
+ <button class="theme" onclick="changeTheme()">
+  🌙 / ☀️ Change Theme
+ </button>
+
+</div>
+
+<section class="hero">
+
+ <h1>Wall<span>ora</span></h1>
+
+ <p>
+ Mobile phone, desktop & keyboard ke liye beautiful wallpapers
+ </p>
+
+ <div class="search">
+  <input
+   id="search"
+   type="text"
+   placeholder="Search wallpapers..."
+   oninput="searchWallpaper()"
+  >
+ </div>
+
+</section>
+
+<section class="categories">
+
+ <div class="category" onclick="openMobile()">
+  <div class="icon">📱</div>
+  <div>
+   <h2>Mobile Wallpapers</h2>
+   <p>Cartoon, Anime, Dark, Nature, Cars, Bike & more</p>
+  </div>
+ </div>
+
+ <div class="category" onclick="openGallery('desktop')">
+  <div class="icon">💻</div>
+  <div>
+   <h2>Desktop Wallpapers</h2>
+   <p>HD wallpapers for laptop & desktop</p>
+  </div>
+ </div>
+
+ <div class="category" onclick="openGallery('keyboard')">
+  <div class="icon">⌨️</div>
+  <div>
+   <h2>Keyboard Wallpapers</h2>
+   <p>Beautiful keyboard backgrounds</p>
+  </div>
+ </div>
+
+</section>
+
+<section class="mobile-types" id="mobileTypes">
+
+ <h2>Mobile Wallpapers</h2>
+
+ <div class="type-list">
+  <button class="active" onclick="filterMobile('all',this)">All</button>
+  <button onclick="filterMobile('cartoon',this)">Cartoon</button>
+  <button onclick="filterMobile('anime',this)">Anime</button>
+  <button onclick="filterMobile('dark',this)">Dark</button>
+  <button onclick="filterMobile('nature',this)">Nature</button>
+  <button onclick="filterMobile('cars',this)">Cars</button>
+  <button onclick="filterMobile('bike',this)">Bike</button>
+ </div>
+
+</section>
+
+<section class="gallery">
+
+ <div class="gallery-head">
+  <h2 id="galleryTitle">Latest Wallpapers</h2>
+  <span id="count">Loading...</span>
+ </div>
+
+ <div class="grid" id="grid">
+  <div class="empty">Wallpapers load ho rahe hain...</div>
+ </div>
+
+</section>
+
+<footer>
+ © 2026 <strong>Wallora</strong> — Premium Wallpapers
+</footer>
+
+<script>
+
+/* YOUR GITHUB */
+
+const GITHUB_USER = "goldenmarry73916-cmyk";
+const GITHUB_REPO = "goldenmarry73916-cmyk.github.io";
+const BRANCH = "main";
+
+
+let allWallpapers = [];
+let currentType = "all";
+let currentCategory = "all";
+
+
+/* MENU */
+
+function openMenu(){
+ document.getElementById("side").classList.add("open");
+}
+
+function closeMenu(){
+ document.getElementById("side").classList.remove("open");
+}
+
+
+/* THEME */
+
+function changeTheme(){
+
+ document.body.classList.toggle("light");
+
+ localStorage.setItem(
+  "walloraTheme",
+  document.body.classList.contains("light")
+  ? "light"
+  : "dark"
+ );
+
+}
+
+if(localStorage.getItem("walloraTheme")==="light"){
+ document.body.classList.add("light");
+}
+
+
+/* GITHUB FILES */
+
+async function getFiles(path){
+
+ const url =
+ `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${path}?ref=${BRANCH}`;
+
+ const response = await fetch(url);
+
+ if(!response.ok) return [];
+
+ return await response.json();
+}
+
+
+/* READ ALL IMAGES */
+
+async function loadWallpapers(){
+
+ const folders = [
+
+  ["mobile/cartoon","mobile","cartoon"],
+  ["mobile/anime","mobile","anime"],
+  ["mobile/dark","mobile","dark"],
+  ["mobile/nature","mobile","nature"],
+  ["mobile/cars","mobile","cars"],
+  ["mobile/bike","mobile","bike"],
+
+  ["desktop","desktop","all"],
+
+  ["keyboard","keyboard","all"]
+
+ ];
+
+ allWallpapers=[];
+
+ for(const folder of folders){
+
+  const files = await getFiles(folder[0]);
+
+  files.forEach(file=>{
+
+   if(
+    file.type==="file" &&
+    /\.(jpg|jpeg|png|webp|gif)$/i.test(file.name)
+   ){
+
+    allWallpapers.push({
+     name:file.name
+      .replace(/\.[^/.]+$/,"")
+      .replace(/[-_]/g," "),
+     type:folder[1],
+     category:folder[2],
+     url:file.download_url
+    });
+
+   }
+
+  });
+
+ }
+
+ render(allWallpapers);
+
+}
+
+
+/* RENDER */
+
+function render(list){
+
+ const grid=document.getElementById("grid");
+
+ grid.innerHTML="";
+
+ document.getElementById("count").innerText =
+ list.length+" Wallpapers";
+
+ if(list.length===0){
+
+  grid.innerHTML=
+  `<div class="empty">
+   No wallpapers found.<br>
+   GitHub folders check karo.
+  </div>`;
+
+  return;
+ }
+
+ list.forEach((wallpaper,index)=>{
+
+  const card=document.createElement("div");
+
+  card.className="card";
+
+  card.innerHTML=`
+
+   <img src="${wallpaper.url}"
+        loading="lazy"
+        alt="${wallpaper.name}">
+
+   <div class="info">
+
+    <h3>${wallpaper.name}</h3>
+
+    <div class="actions">
+
+     <button class="like"
+       onclick="likeWallpaper(this)">
+       ❤️ <span>0</span>
+     </button>
+
+     <button class="comment"
+       onclick="toggleComments(this)">
+       💬
+     </button>
+
+     <a class="download"
+       href="${wallpaper.url}"
+       download>
+       Download
+     </a>
+
+    </div>
+
+    <div class="comments">
+
+     <input
+       type="text"
+       placeholder="Write a comment..."
+     >
+
+     <button onclick="addComment(this)">
+       Post
+     </button>
+
+     <div class="comment-list"></div>
+
+    </div>
+
+   </div>
+  `;
+
+  grid.appendChild(card);
+
+ });
+
+}
+
+
+/* MOBILE */
+
+function openMobile(){
+
+ document.getElementById("mobileTypes")
+ .classList.add("show");
+
+ currentType="mobile";
+ currentCategory="all";
+
+ document.getElementById("galleryTitle")
+ .innerText="Mobile Wallpapers";
+
+ applyFilter();
+
+}
+
+
+/* DESKTOP / KEYBOARD */
+
+function openGallery(type){
+
+ document.getElementById("mobileTypes")
+ .classList.remove("show");
+
+ currentType=type;
+ currentCategory="all";
+
+ document.getElementById("galleryTitle")
+ .innerText =
+ type==="desktop"
+ ? "Desktop Wallpapers"
+ : "Keyboard Wallpapers";
+
+ applyFilter();
+
+}
+
+
+/* MOBILE FILTER */
+
+function filterMobile(category,button){
+
+ currentType="mobile";
+ currentCategory=category;
+
+ document.querySelectorAll(".type-list button")
+ .forEach(btn=>btn.classList.remove("active"));
+
+ button.classList.add("active");
+
+ applyFilter();
+
+}
+
+
+/* FILTER */
+
+function applyFilter(){
+
+ let list=allWallpapers.filter(item=>{
+
+  if(item.type!==currentType) return false;
+
+  if(
+   currentType==="mobile" &&
+   currentCategory!=="all" &&
+   item.category!==currentCategory
+  ){
+   return false;
+  }
+
+  return true;
+
+ });
+
+ render(list);
+
+}
+
+
+/* SEARCH */
+
+function searchWallpaper(){
+
+ const text=
+ document.getElementById("search")
+ .value
+ .toLowerCase()
+ .trim();
+
+ let list=allWallpapers.filter(item=>{
+
+  if(currentType!=="all" && item.type!==currentType)
+   return false;
+
+  if(
+   currentType==="mobile" &&
+   currentCategory!=="all" &&
+   item.category!==currentCategory
+  )
+   return false;
+
+  return item.name.toLowerCase().includes(text);
+
+ });
+
+ render(list);
+
+}
+
+
+/* LIKE */
+
+function likeWallpaper(button){
+
+ const number=button.querySelector("span");
+
+ let value=parseInt(number.innerText);
+
+ if(button.classList.contains("liked")){
+
+  value--;
+  button.classList.remove("liked");
+
+ }else{
+
+  value++;
+  button.classList.add("liked");
+
+ }
+
+ number.innerText=value;
+
+}
+
+
+/* COMMENTS */
+
+function toggleComments(button){
+
+ const area=
+ button.closest(".info")
+ .querySelector(".comments");
+
+ area.classList.toggle("show");
+
+}
+
+
+function addComment(button){
+
+ const area=
+ button.closest(".comments");
+
+ const input=
+ area.querySelector("input");
+
+ const list=
+ area.querySelector(".comment-list");
+
+ const text=input.value.trim();
+
+ if(!text) return;
+
+ const div=document.createElement("div");
+
+ div.innerText="💬 "+text;
+
+ list.appendChild(div);
+
+ input.value="";
+
+}
+
+
+/* START */
+
+loadWallpapers();
+
+</script>
+
+</body>
+</html>
