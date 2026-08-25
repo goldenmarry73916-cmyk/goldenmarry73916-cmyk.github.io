@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Wallora - Premium Wallpapers</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+:root{
+  --bg:#070812;
+  --card:#101321;
+  --card2:#171b30;
+  --text:#ffffff;
+  --muted:#9299b5;
+  --border:#292f4b;
+  --purple:#7c5cff;
+  --blue:#00c8ff;
+  --gold:#ffc857;
+}
+
+body.light{
+  --bg:#f5f7ff;
+  --card:#ffffff;
+  --card2:#eef1ff;
+  --text:#111522;
+  --muted:#60677d;
+  --border:#d9dded;
+  --purple:#694cff;
+  --blue:#009dcc;
+  --gold:#e3a900;
+}
+
+body{
+  font-family:Arial,Helvetica,sans-serif;
+
+  background:
+    radial-gradient(
+      circle at 10% 5%,
+      #38218a55,
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 90% 15%,
+      #006f9250,
+      transparent 28%
+    ),
+    var(--bg);
+
+  color:var(--text);
+  min-height:100vh;
+
+  transition:
+    background .3s,
+    color .3s;
+}
+
+body.light{
+  background:
+    radial-gradient(
+      circle at 10% 5%,
+      #b8a9ff55,
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 90% 15%,
+      #8eeaff55,
+      transparent 28%
+    ),
+    var(--bg);
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+header{
+  position:sticky;
+  top:0;
+  z-index:1000;
+
+  height:72px;
+  padding:0 5%;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  background:#080a14dd;
+  backdrop-filter:blur(18px);
+
+  border-bottom:1px solid var(--border);
+}
+
+body.light header{
+  background:#ffffffdd;
+}
+
+.logo{
+  font-size:29px;
+  font-weight:900;
+}
+
+.logo span{
+  background:
+    linear-gradient(
+      90deg,
+      var(--purple),
+      var(--blue),
+      var(--gold)
+    );
+
+  -webkit-background-clip:text;
+  color:transparent;
+}
+
+
+/* =========================
+   MENU
+========================= */
+
+.menu-btn{
+  width:46px;
+  height:46px;
+
+  border:1px solid var(--border);
+  border-radius:14px;
+
+  background:var(--card);
+
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+
+  gap:5px;
+  cursor:pointer;
+}
+
+.menu-btn span{
+  width:21px;
+  height:2px;
+
+  background:var(--text);
+  border-radius:5px;
+}
+
+
+/* =========================
+   SIDE MENU
+========================= */
+
+.side{
+  position:fixed;
+
+  right:-330px;
+  top:0;
+
+  width:310px;
+  height:100vh;
+
+  z-index:3000;
+
+  background:var(--card);
+
+  border-left:1px solid var(--border);
+
+  padding:22px;
+
+  transition:.35s;
+
+  box-shadow:-20px 0 60px #0009;
+}
+
+.side.open{
+  right:0;
+}
+
+.close{
+  text-align:right;
+  font-size:30px;
+  cursor:pointer;
+}
+
+.side h2{
+  margin-top:25px;
+  margin-bottom:10px;
+}
+
+.side p{
+  color:var(--muted);
+  line-height:1.6;
+}
+
+
+/* =========================
+   LOGIN BUTTON
+========================= */
+
+.login-btn{
+  width:100%;
+
+  margin-top:25px;
+  padding:14px;
+
+  border:0;
+  border-radius:13px;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--purple),
+      var(--blue)
+    );
+
+  color:white;
+
+  font-weight:bold;
+  cursor:pointer;
+  font-size:14px;
+}
+
+
+/* =========================
+   LOGOUT BUTTON
+========================= */
+
+.logout-btn{
+  width:100%;
+
+  margin-top:12px;
+  padding:13px;
+
+  border:1px solid #ff5555;
+  border-radius:13px;
+
+  background:#ff555522;
+
+  color:#ff7777;
+
+  font-weight:bold;
+  cursor:pointer;
+
+  display:none;
+}
+
+
+/* =========================
+   LOGIN STATUS
+========================= */
+
+.login-status{
+  margin-top:12px;
+
+  text-align:center;
+
+  font-size:12px;
+
+  color:var(--muted);
+
+  min-height:18px;
+}
+
+
+/* =========================
+   LOGIN PANEL
+========================= */
+
+.login-panel{
+  position:fixed;
+  inset:0;
+
+  z-index:5000;
+
+  display:none;
+
+  align-items:center;
+  justify-content:center;
+
+  padding:20px;
+
+  background:#000c;
+
+  backdrop-filter:blur(10px);
+}
+
+.login-panel.show{
+  display:flex;
+}
+
+.login-box{
+  width:100%;
+  max-width:420px;
+
+  padding:28px;
+
+  border-radius:24px;
+
+  background:
+    linear-gradient(
+      145deg,
+      var(--card),
+      var(--card2)
+    );
+
+  border:1px solid var(--border);
+
+  box-shadow:0 25px 80px #000b;
+}
+
+.login-box h2{
+  margin-bottom:8px;
+}
+
+.login-box p{
+  color:var(--muted);
+  font-size:13px;
+  margin-bottom:20px;
+}
+
+.login-close{
+  float:right;
+
+  width:36px;
+  height:36px;
+
+  border:0;
+  border-radius:50%;
+
+  background:#252a40;
+
+  color:white;
+
+  font-size:22px;
+
+  cursor:pointer;
+}
+
+.login-box label{
+  display:block;
+
+  margin-top:15px;
+  margin-bottom:7px;
+
+  color:var(--muted);
+
+  font-size:13px;
+}
+
+.login-box input{
+  width:100%;
+
+  padding:13px;
+
+  border-radius:11px;
+
+  border:1px solid var(--border);
+
+  background:var(--bg);
+
+  color:var(--text);
+
+  outline:none;
+}
+
+.login-submit{
+  width:100%;
+
+  margin-top:20px;
+
+  padding:14px;
+
+  border:0;
+  border-radius:12px;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--purple),
+      var(--blue)
+    );
+
+  color:white;
+
+  font-weight:bold;
+
+  cursor:pointer;
+}
+
+.login-submit:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+
+/* =========================
+   THEME
+========================= */
+
+.theme{
+  width:100%;
+
+  margin-top:12px;
+  padding:14px;
+
+  border:0;
+  border-radius:13px;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--purple),
+      var(--blue)
+    );
+
+  color:white;
+
+  font-weight:bold;
+
+  cursor:pointer;
+
+  font-size:14px;
+}
+
+
+/* =========================
+   HERO
+========================= */
+
+.hero{
+  text-align:center;
+  padding:70px 20px 35px;
+}
+
+.hero h1{
+  font-size:58px;
+  font-weight:900;
+  letter-spacing:-3px;
+}
+
+.hero h1 span{
+  background:
+    linear-gradient(
+      90deg,
+      var(--purple),
+      var(--blue),
+      var(--gold)
+    );
+
+  -webkit-background-clip:text;
+  color:transparent;
+}
+
+.hero p{
+  color:var(--muted);
+  margin-top:12px;
+  font-size:14px;
+}
+
+
+/* =========================
+   SEARCH
+========================= */
+
+.search{
+  max-width:650px;
+  margin:28px auto 0;
+}
+
+.search input{
+  width:100%;
+
+  padding:17px 23px;
+
+  border-radius:30px;
+
+  border:1px solid var(--border);
+
+  background:var(--card);
+
+  color:var(--text);
+
+  outline:none;
+
+  font-size:15px;
+
+  box-shadow:0 15px 40px #0005;
+}
+
+.search input:focus{
+  border-color:var(--purple);
+}
+
+
+/* =========================
+   CATEGORIES
+========================= */
+
+.categories{
+  padding:20px 6% 50px;
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  gap:20px;
+}
+
+.category{
+  position:relative;
+
+  overflow:hidden;
+
+  background:
+    linear-gradient(
+      145deg,
+      var(--card),
+      var(--card2)
+    );
+
+  border:1px solid var(--border);
+
+  border-radius:22px;
+
+  padding:32px 22px;
+
+  text-align:center;
+
+  cursor:pointer;
+
+  transition:.3s;
+
+  text-decoration:none;
+
+  color:var(--text);
+
+  display:block;
+}
+
+.category:hover{
+  transform:translateY(-7px);
+
+  border-color:var(--purple);
+
+  box-shadow:0 20px 50px #0007;
+}
+
+.category:active{
+  transform:scale(.97);
+}
+
+.category .icon{
+  font-size:45px;
+  margin-bottom:13px;
+}
+
+.category h2{
+  font-size:20px;
+}
+
+.category p{
+  color:var(--muted);
+
+  margin-top:8px;
+
+  font-size:13px;
+
+  line-height:1.5;
+}
+
+
+/* =========================
+   INFO
+========================= */
+
+.info-box{
+  margin:0 6% 60px;
+
+  padding:30px;
+
+  border:1px solid var(--border);
+
+  border-radius:22px;
+
+  background:
+    linear-gradient(
+      145deg,
+      var(--card),
+      var(--card2)
+    );
+
+  text-align:center;
+}
+
+.info-box h2{
+  font-size:24px;
+  margin-bottom:10px;
+}
+
+.info-box p{
+  color:var(--muted);
+  line-height:1.7;
+  font-size:14px;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+footer{
+  padding:40px 20px;
+
+  text-align:center;
+
+  border-top:1px solid var(--border);
+
+  color:var(--muted);
+}
+
+.footer-logo{
+  font-size:22px;
+  font-weight:900;
+  margin-bottom:8px;
+}
+
+.footer-logo span{
+  background:
+    linear-gradient(
+      90deg,
+      var(--purple),
+      var(--blue),
+      var(--gold)
+    );
+
+  -webkit-background-clip:text;
+  color:transparent;
+}
+
+footer strong{
+  color:var(--gold);
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:700px){
+
+  header{
+    padding:0 4%;
+  }
+
+  .logo{
+    font-size:24px;
+  }
+
+  .hero{
+    padding:48px 15px 30px;
+  }
+
+  .hero h1{
+    font-size:42px;
+  }
+
+  .categories{
+    grid-template-columns:1fr;
+
+    padding:20px 4% 40px;
+  }
+
+  .category{
+    display:flex;
+
+    align-items:center;
+
+    text-align:left;
+
+    gap:15px;
+
+    padding:21px;
+  }
+
+  .category .icon{
+    margin:0;
+
+    min-width:45px;
+
+    font-size:34px;
+  }
+
+  .info-box{
+    margin:0 4% 40px;
+    padding:25px 18px;
+  }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+  <div class="logo">
+    Wall<span>ora</span>
+  </div>
+
+  <button
+    class="menu-btn"
+    onclick="openMenu()"
+    aria-label="Open menu"
+  >
+
+    <span></span>
+    <span></span>
+    <span></span>
+
+  </button>
+
+</header>
+
+
+<!-- SIDE MENU -->
+
+<div
+  class="side"
+  id="side"
+>
+
+  <div
+    class="close"
+    onclick="closeMenu()"
+  >
+    ×
+  </div>
+
+  <h2>
+    Wallora Menu
+  </h2>
+
+  <p>
+    Premium wallpapers for mobile phones,
+    laptops, desktops and keyboards.
+  </p>
+
+
+  <button
+    class="login-btn"
+    id="loginOpenButton"
+    onclick="openLogin()"
+  >
+    🔐 Owner Login
+  </button>
+
+
+  <button
+    class="logout-btn"
+    id="logoutButton"
+    onclick="logoutOwner()"
+  >
+    🚪 Logout
+  </button>
+
+
+  <div
+    class="login-status"
+    id="loginStatus"
+  ></div>
+
+
+  <button
+    class="theme"
+    onclick="changeTheme()"
+  >
+    🌙 / ☀️ Change Theme
+  </button>
+
+</div>
+
+
+<!-- HERO -->
+
+<section class="hero">
+
+  <h1>
+    Wall<span>ora</span>
+  </h1>
+
+  <p>
+    Premium wallpapers for every screen
+  </p>
+
+  <div class="search">
+
+    <input
+      id="search"
+      type="text"
+      placeholder="🔍 Search wallpapers..."
+    >
+
+  </div>
+
+</section>
+
+
+<!-- CATEGORIES -->
+
+<section class="categories">
+
+
+  <a
+    class="category"
+    href="mobile.html"
+  >
+
+    <div class="icon">
+      📱
+    </div>
+
+    <div>
+
+      <h2>
+        Mobile Wallpapers
+      </h2>
+
+      <p>
+        Cartoon, Anime, Nature, Cars & more
+      </p>
+
+    </div>
+
+  </a>
+
+
+  <a
+    class="category"
+    href="laptop.html"
+  >
+
+    <div class="icon">
+      💻
+    </div>
+
+    <div>
+
+      <h2>
+        Laptop Wallpapers
+      </h2>
+
+      <p>
+        HD & 4K wallpapers for laptop and desktop
+      </p>
+
+    </div>
+
+  </a>
+
+
+  <a
+    class="category"
+    href="keyboard.html"
+  >
+
+    <div class="icon">
+      ⌨️
+    </div>
+
+    <div>
+
+      <h2>
+        Keyboard Wallpapers
+      </h2>
+
+      <p>
+        Beautiful keyboard backgrounds
+      </p>
+
+    </div>
+
+  </a>
+
+
+</section>
+
+
+<!-- INFO -->
+
+<section class="info-box">
+
+  <h2>
+    Welcome to Wallora
+  </h2>
+
+  <p>
+    Discover premium wallpapers for your
+    mobile phone, laptop, desktop and keyboard.
+    Select any category above to explore
+    beautiful wallpapers.
+  </p>
+
+</section>
+
+
+<!-- FOOTER -->
+
+<footer>
+
+  <div class="footer-logo">
+    Wall<span>ora</span>
+  </div>
+
+  <p>
+    Premium Wallpapers
+  </p>
+
+  <p style="margin-top:8px;">
+    © 2026 Wallora • Created by
+    <strong>Deepak Paweria</strong>
+  </p>
+
+</footer>
+
+
+<!-- LOGIN PANEL -->
+
+<div
+  class="login-panel"
+  id="loginPanel"
+>
+
+  <div class="login-box">
+
+    <button
+      class="login-close"
+      onclick="closeLogin()"
+    >
+      ×
+    </button>
+
+    <h2>
+      Wallora Owner Login
+    </h2>
+
+    <p>
+      Login with your Wallora owner account.
+    </p>
+
+
+    <label>
+      Email
+    </label>
+
+    <input
+      type="email"
+      id="ownerEmail"
+      placeholder="Enter owner email"
+      autocomplete="email"
+    >
+
+
+    <label>
+      Password
+    </label>
+
+    <input
+      type="password"
+      id="ownerPassword"
+      placeholder="Enter password"
+      autocomplete="current-password"
+    >
+
+
+    <button
+      class="login-submit"
+      id="loginSubmit"
+      onclick="loginOwner()"
+    >
+      Login
+    </button>
+
+
+    <div
+      class="login-status"
+      id="loginPanelStatus"
+    ></div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   SUPABASE
+===================================================== */
+
+const SUPABASE_URL =
+"https://frsdscguevzqqkzbwxxy.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_fzXOjFFKz_QXtZagfGXpEA_xgf1cZfN";
+
+
+const supabaseClient =
+supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY,
+  {
+    auth:{
+      persistSession:true,
+      autoRefreshToken:true,
+      detectSessionInUrl:true
+    }
+  }
+);
+
+
+/* =====================================================
+   OWNER ID
+===================================================== */
+
+const OWNER_ID =
+"7c9261f0-a096-482f-acd7-14af34bade15";
+
+
+/* =====================================================
+   MENU
+===================================================== */
+
+function openMenu(){
+
+  document
+    .getElementById("side")
+    .classList
+    .add("open");
+
+}
+
+
+function closeMenu(){
+
+  document
+    .getElementById("side")
+    .classList
+    .remove("open");
+
+}
+
+
+/* =====================================================
+   LOGIN PANEL
+===================================================== */
+
+function openLogin(){
+
+  document
+    .getElementById("loginPanel")
+    .classList
+    .add("show");
+
+}
+
+
+function closeLogin(){
+
+  document
+    .getElementById("loginPanel")
+    .classList
+    .remove("show");
+
+}
+
+
+/* =====================================================
+   OWNER LOGIN
+===================================================== */
+
+async function loginOwner(){
+
+  const email =
+    document
+      .getElementById("ownerEmail")
+      .value
+      .trim();
+
+
+  const password =
+    document
+      .getElementById("ownerPassword")
+      .value;
+
+
+  const status =
+    document
+      .getElementById("loginPanelStatus");
+
+
+  const button =
+    document
+      .getElementById("loginSubmit");
+
+
+  if(!email || !password){
+
+    status.innerText =
+      "Please enter email and password.";
+
+    return;
+
+  }
+
+
+  button.disabled =
+    true;
+
+
+  status.innerText =
+    "Logging in...";
+
+
+  try{
+
+    const result =
+      await supabaseClient
+        .auth
+        .signInWithPassword({
+
+          email:email,
+
+          password:password
+
+        });
+
+
+    if(result.error){
+
+      console.log(
+        "Login error:",
+        result.error
+      );
+
+      status.innerText =
+        result.error.message;
+
+      button.disabled =
+        false;
+
+      return;
+
+    }
+
+
+    const user =
+      result.data?.user;
+
+
+    if(!user){
+
+      status.innerText =
+        "Login failed. User not found.";
+
+      button.disabled =
+        false;
+
+      return;
+
+    }
+
+
+    console.log(
+      "Logged in:",
+      user.id
+    );
+
+
+    if(user.id !== OWNER_ID){
+
+      await supabaseClient
+        .auth
+        .signOut();
+
+
+      status.innerText =
+        "This account is not the Wallora owner.";
+
+      button.disabled =
+        false;
+
+      return;
+
+    }
+
+
+    status.innerText =
+      "✅ Owner login successful!";
+
+
+    updateLoginUI(user);
+
+
+    setTimeout(
+      ()=>{
+
+        closeLogin();
+
+        closeMenu();
+
+      },
+      800
+    );
+
+
+  }catch(error){
+
+    console.log(
+      "Login exception:",
+      error
+    );
+
+    status.innerText =
+      "Login failed. Please try again.";
+
+  }
+
+
+  button.disabled =
+    false;
+
+}
+
+
+/* =====================================================
+   UPDATE LOGIN UI
+===================================================== */
+
+function updateLoginUI(user){
+
+  const loginButton =
+    document
+      .getElementById("loginOpenButton");
+
+
+  const logoutButton =
+    document
+      .getElementById("logoutButton");
+
+
+  const status =
+    document
+      .getElementById("loginStatus");
+
+
+  if(
+    user &&
+    user.id === OWNER_ID
+  ){
+
+    loginButton.style.display =
+      "none";
+
+
+    logoutButton.style.display =
+      "block";
+
+
+    status.innerText =
+      "✅ Wallora Owner Logged In";
+
+  }else{
+
+    loginButton.style.display =
+      "block";
+
+
+    logoutButton.style.display =
+      "none";
+
+
+    status.innerText =
+      "";
+
+  }
+
+}
+
+
+/* =====================================================
+   CHECK EXISTING SESSION
+===================================================== */
+
+async function checkExistingLogin(){
+
+  try{
+
+    const result =
+      await supabaseClient
+        .auth
+        .getSession();
+
+
+    if(result.error){
+
+      console.log(
+        "Session error:",
+        result.error
+      );
+
+      return;
+
+    }
+
+
+    const session =
+      result.data?.session;
+
+
+    if(
+      session &&
+      session.user &&
+      session.user.id === OWNER_ID
+    ){
+
+      updateLoginUI(
+        session.user
+      );
+
+    }else{
+
+      updateLoginUI(null);
+
+    }
+
+  }catch(error){
+
+    console.log(
+      "Session check error:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   AUTH STATE
+===================================================== */
+
+supabaseClient
+  .auth
+  .onAuthStateChange(
+    function(
+      event,
+      session
+    ){
+
+      if(
+        session &&
+        session.user
+      ){
+
+        updateLoginUI(
+          session.user
+        );
+
+      }else{
+
+        updateLoginUI(
+          null
+        );
+
+      }
+
+    }
+  );
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+async function logoutOwner(){
+
+  try{
+
+    await supabaseClient
+      .auth
+      .signOut();
+
+
+    updateLoginUI(null);
+
+
+    document
+      .getElementById(
+        "loginStatus"
+      )
+      .innerText =
+      "Logged out";
+
+
+  }catch(error){
+
+    console.log(
+      "Logout error:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   THEME
+===================================================== */
+
+function changeTheme(){
+
+  document.body
+    .classList
+    .toggle("light");
+
+
+  if(
+    document.body
+      .classList
+      .contains("light")
+  ){
+
+    localStorage.setItem(
+      "walloraTheme",
+      "light"
+    );
+
+  }else{
+
+    localStorage.setItem(
+      "walloraTheme",
+      "dark"
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   LOAD THEME
+===================================================== */
+
+if(
+  localStorage.getItem(
+    "walloraTheme"
+  ) === "light"
+){
+
+  document.body
+    .classList
+    .add("light");
+
+}
+
+
+/* =====================================================
+   ESC
+===================================================== */
+
+document.addEventListener(
+  "keydown",
+  function(event){
+
+    if(event.key === "Escape"){
+
+      closeMenu();
+      closeLogin();
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   START
+===================================================== */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    checkExistingLogin();
+
+  }
+);
+
+</script>
+
+</body>
+</html>
