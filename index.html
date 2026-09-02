@@ -1,0 +1,2006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Wallora • Premium Wallpapers</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+    --bg:#07080d;
+    --card:#10121a;
+    --card2:#151824;
+    --text:#f7f7fa;
+    --muted:#8c91a0;
+    --border:rgba(255,255,255,.09);
+    --soft:rgba(255,255,255,.055);
+    --shadow:0 25px 70px rgba(0,0,0,.35);
+}
+
+body.light{
+    --bg:#f5f6fa;
+    --card:#ffffff;
+    --card2:#f0f1f5;
+    --text:#15161a;
+    --muted:#6e7380;
+    --border:rgba(0,0,0,.08);
+    --soft:rgba(0,0,0,.045);
+    --shadow:0 20px 50px rgba(0,0,0,.10);
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    min-height:100vh;
+    background:
+        radial-gradient(circle at 20% 10%,rgba(120,100,255,.10),transparent 28%),
+        radial-gradient(circle at 85% 25%,rgba(0,210,255,.07),transparent 25%),
+        var(--bg);
+    color:var(--text);
+    font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    transition:.3s;
+}
+
+/* ================= HEADER ================= */
+
+header{
+    position:sticky;
+    top:0;
+    z-index:1000;
+
+    height:72px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 5%;
+
+    background:rgba(7,8,13,.72);
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+
+    border-bottom:1px solid var(--border);
+}
+
+body.light header{
+    background:rgba(245,246,250,.78);
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:11px;
+
+    text-decoration:none;
+    color:var(--text);
+}
+
+.logo-mark{
+    width:40px;
+    height:40px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:13px;
+
+    background:linear-gradient(
+        135deg,
+        rgba(255,255,255,.16),
+        rgba(255,255,255,.04)
+    );
+
+    border:1px solid var(--border);
+}
+
+.wallpaper-icon{
+    width:21px;
+    height:16px;
+
+    display:block;
+    position:relative;
+
+    border:2px solid currentColor;
+    border-radius:4px;
+}
+
+.wallpaper-icon::before{
+    content:"";
+
+    position:absolute;
+
+    width:5px;
+    height:5px;
+
+    border-radius:50%;
+
+    background:currentColor;
+
+    top:3px;
+    right:3px;
+}
+
+.wallpaper-icon::after{
+    content:"";
+
+    position:absolute;
+
+    width:10px;
+    height:7px;
+
+    left:2px;
+    bottom:2px;
+
+    border-left:2px solid currentColor;
+    border-top:2px solid currentColor;
+
+    transform:skew(-25deg);
+}
+
+.logo-text{
+    font-size:20px;
+    font-weight:850;
+    letter-spacing:-.5px;
+}
+
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.login-btn,
+.menu-btn{
+    height:43px;
+
+    border:1px solid var(--border);
+    border-radius:14px;
+
+    color:var(--text);
+    background:var(--soft);
+
+    cursor:pointer;
+
+    transition:.25s;
+}
+
+.login-btn{
+    padding:0 18px;
+    font-weight:700;
+}
+
+.menu-btn{
+    width:45px;
+    font-size:22px;
+}
+
+.login-btn:hover,
+.menu-btn:hover{
+    transform:translateY(-2px);
+    background:rgba(255,255,255,.10);
+}
+
+/* ================= HERO ================= */
+
+.hero{
+    min-height:calc(100vh - 72px);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:70px 6% 90px;
+
+    text-align:center;
+}
+
+.hero-inner{
+    max-width:900px;
+}
+
+.badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+
+    padding:8px 14px;
+    margin-bottom:22px;
+
+    border:1px solid var(--border);
+    border-radius:999px;
+
+    background:var(--soft);
+
+    color:var(--muted);
+
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.4px;
+}
+
+.badge-dot{
+    width:7px;
+    height:7px;
+
+    border-radius:50%;
+
+    background:#7c6cff;
+    box-shadow:0 0 14px #7c6cff;
+}
+
+.hero h1{
+    font-size:clamp(42px,7vw,82px);
+    line-height:.98;
+
+    letter-spacing:-4px;
+    font-weight:900;
+}
+
+.hero h1 span{
+    color:transparent;
+
+    background:linear-gradient(
+        120deg,
+        #fff,
+        #aaa4ff,
+        #74e7ff
+    );
+
+    -webkit-background-clip:text;
+    background-clip:text;
+}
+
+body.light .hero h1 span{
+    background:linear-gradient(
+        120deg,
+        #16171b,
+        #6559e8,
+        #008aa8
+    );
+
+    -webkit-background-clip:text;
+    background-clip:text;
+}
+
+.hero p{
+    max-width:650px;
+
+    margin:25px auto 0;
+
+    color:var(--muted);
+
+    font-size:17px;
+    line-height:1.7;
+}
+
+.hero-buttons{
+    display:flex;
+
+    justify-content:center;
+    gap:12px;
+
+    flex-wrap:wrap;
+
+    margin-top:34px;
+}
+
+.primary-btn,
+.secondary-btn{
+    padding:14px 22px;
+
+    border-radius:15px;
+
+    text-decoration:none;
+
+    font-weight:750;
+    font-size:14px;
+
+    transition:.25s;
+}
+
+.primary-btn{
+    color:#fff;
+
+    background:#171922;
+
+    border:1px solid rgba(255,255,255,.14);
+
+    box-shadow:0 12px 35px rgba(0,0,0,.25);
+}
+
+.secondary-btn{
+    color:var(--text);
+
+    background:var(--soft);
+
+    border:1px solid var(--border);
+}
+
+.primary-btn:hover,
+.secondary-btn:hover{
+    transform:translateY(-3px);
+}
+
+/* ================= SECTION ================= */
+
+section{
+    padding:80px 6%;
+}
+
+.section-head{
+    max-width:700px;
+
+    margin:0 auto 35px;
+
+    text-align:center;
+}
+
+.section-head h2{
+    font-size:clamp(28px,4vw,42px);
+    letter-spacing:-1.5px;
+}
+
+.section-head p{
+    margin-top:10px;
+
+    color:var(--muted);
+
+    line-height:1.6;
+}
+
+/* ================= CATEGORIES ================= */
+
+.categories{
+    width:100%;
+    max-width:1150px;
+
+    margin:auto;
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,minmax(0,1fr));
+
+    gap:18px;
+}
+
+.category{
+    position:relative;
+
+    overflow:hidden;
+
+    min-width:0;
+    min-height:230px;
+
+    padding:25px;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+
+    border-radius:25px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.08),
+            rgba(255,255,255,.025)
+        );
+
+    border:1px solid var(--border);
+
+    box-shadow:var(--shadow);
+
+    text-decoration:none;
+    color:white;
+
+    transition:.35s;
+}
+
+.category:hover{
+    transform:translateY(-7px);
+
+    border-color:rgba(255,255,255,.18);
+}
+
+.category::before{
+    content:"";
+
+    position:absolute;
+    inset:0;
+
+    background:
+        radial-gradient(
+            circle at 80% 20%,
+            rgba(130,110,255,.18),
+            transparent 35%
+        );
+
+    pointer-events:none;
+}
+
+.category-icon{
+    position:relative;
+
+    width:54px;
+    height:54px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:17px;
+
+    background:rgba(255,255,255,.10);
+
+    border:1px solid rgba(255,255,255,.10);
+
+    font-size:25px;
+
+    margin-bottom:auto;
+}
+
+.category h3{
+    position:relative;
+
+    margin-top:35px;
+
+    font-size:21px;
+}
+
+.category p{
+    position:relative;
+
+    margin-top:6px;
+
+    color:rgba(255,255,255,.60);
+
+    font-size:12px;
+}
+
+/* ================= FEATURES ================= */
+
+.features{
+    width:100%;
+    max-width:1100px;
+
+    margin:auto;
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,minmax(0,1fr));
+
+    gap:18px;
+}
+
+.feature{
+    min-width:0;
+
+    padding:27px;
+
+    border:1px solid var(--border);
+
+    border-radius:22px;
+
+    background:var(--card);
+
+    transition:.3s;
+}
+
+.feature:hover{
+    transform:translateY(-5px);
+}
+
+.feature-icon{
+    width:48px;
+    height:48px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:15px;
+
+    background:var(--soft);
+
+    font-size:21px;
+}
+
+.feature h3{
+    margin-top:20px;
+
+    font-size:17px;
+}
+
+.feature p{
+    margin-top:8px;
+
+    color:var(--muted);
+
+    line-height:1.6;
+
+    font-size:13px;
+}
+
+/* ================= SIDE MENU ================= */
+
+.menu-overlay{
+    position:fixed;
+    inset:0;
+
+    z-index:2999;
+
+    background:rgba(0,0,0,.55);
+
+    backdrop-filter:blur(5px);
+
+    opacity:0;
+    visibility:hidden;
+
+    transition:.3s;
+}
+
+.menu-overlay.active{
+    opacity:1;
+    visibility:visible;
+}
+
+.side-menu{
+    position:fixed;
+
+    top:0;
+    right:-370px;
+
+    width:340px;
+    max-width:88%;
+    height:100vh;
+
+    z-index:3000;
+
+    padding:22px 17px;
+
+    background:rgba(13,15,23,.94);
+
+    backdrop-filter:blur(28px);
+    -webkit-backdrop-filter:blur(28px);
+
+    border-left:1px solid rgba(255,255,255,.10);
+
+    box-shadow:-25px 0 70px rgba(0,0,0,.45);
+
+    transition:right .4s cubic-bezier(.4,0,.2,1);
+
+    overflow-y:auto;
+}
+
+.side-menu.active{
+    right:0;
+}
+
+body.light .side-menu{
+    background:rgba(248,249,252,.96);
+
+    border-left-color:rgba(0,0,0,.08);
+
+    box-shadow:-25px 0 70px rgba(0,0,0,.14);
+}
+
+.menu-header{
+    display:flex;
+
+    align-items:center;
+    justify-content:space-between;
+
+    padding:4px 4px 20px;
+
+    border-bottom:1px solid var(--border);
+}
+
+.menu-brand{
+    display:flex;
+    align-items:center;
+    gap:11px;
+}
+
+.menu-brand-icon{
+    width:43px;
+    height:43px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:14px;
+
+    background:var(--soft);
+
+    border:1px solid var(--border);
+}
+
+.menu-brand h3{
+    font-size:17px;
+}
+
+.menu-brand span{
+    display:block;
+
+    margin-top:3px;
+
+    color:var(--muted);
+
+    font-size:10px;
+}
+
+.menu-close{
+    width:40px;
+    height:40px;
+
+    border:none;
+
+    border-radius:13px;
+
+    background:var(--soft);
+
+    color:var(--text);
+
+    font-size:18px;
+
+    cursor:pointer;
+
+    transition:.25s;
+}
+
+.menu-close:hover{
+    transform:rotate(90deg);
+}
+
+.menu-items{
+    display:flex;
+
+    flex-direction:column;
+
+    gap:9px;
+
+    margin-top:17px;
+}
+
+.menu-item{
+    width:100%;
+
+    display:flex;
+    align-items:center;
+
+    gap:13px;
+
+    padding:13px;
+
+    border:1px solid var(--border);
+
+    border-radius:17px;
+
+    background:var(--soft);
+
+    color:var(--text);
+
+    text-decoration:none;
+
+    cursor:pointer;
+
+    transition:.25s;
+}
+
+.menu-item:hover{
+    transform:translateX(-4px);
+
+    background:rgba(255,255,255,.09);
+}
+
+.menu-icon{
+    width:40px;
+    height:40px;
+
+    flex:0 0 40px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:13px;
+
+    background:rgba(255,255,255,.07);
+
+    font-size:18px;
+}
+
+.menu-text{
+    flex:1;
+
+    text-align:left;
+}
+
+.menu-text strong{
+    display:block;
+
+    font-size:13px;
+}
+
+.menu-text small{
+    display:block;
+
+    margin-top:3px;
+
+    color:var(--muted);
+
+    font-size:10px;
+}
+
+.menu-arrow{
+    color:var(--muted);
+
+    font-size:20px;
+}
+
+.menu-divider{
+    height:1px;
+
+    margin:8px 4px;
+
+    background:var(--border);
+}
+
+.menu-footer{
+    margin-top:25px;
+
+    padding:16px;
+
+    text-align:center;
+
+    border:1px solid var(--border);
+
+    border-radius:17px;
+
+    background:var(--soft);
+}
+
+.menu-footer strong{
+    font-size:11px;
+}
+
+.menu-footer span{
+    display:block;
+
+    margin-top:4px;
+
+    color:var(--muted);
+
+    font-size:9px;
+}
+
+/* ================= MODALS ================= */
+
+.modal-overlay{
+    position:fixed;
+    inset:0;
+
+    z-index:5000;
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+
+    padding:20px;
+
+    background:rgba(0,0,0,.65);
+
+    backdrop-filter:blur(8px);
+}
+
+.modal-overlay.show{
+    display:flex;
+}
+
+.modal{
+    width:100%;
+    max-width:430px;
+
+    padding:25px;
+
+    border:1px solid var(--border);
+
+    border-radius:25px;
+
+    background:var(--card);
+
+    box-shadow:var(--shadow);
+
+    animation:modalIn .25s ease;
+}
+
+@keyframes modalIn{
+    from{
+        opacity:0;
+        transform:scale(.94) translateY(10px);
+    }
+
+    to{
+        opacity:1;
+        transform:scale(1);
+    }
+}
+
+.modal-top{
+    display:flex;
+
+    justify-content:space-between;
+    align-items:center;
+}
+
+.modal-top h2{
+    font-size:20px;
+}
+
+.modal-close{
+    width:38px;
+    height:38px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:var(--soft);
+
+    color:var(--text);
+
+    cursor:pointer;
+
+    font-size:18px;
+}
+
+.input{
+    width:100%;
+
+    margin-top:14px;
+
+    padding:14px 15px;
+
+    border:1px solid var(--border);
+
+    border-radius:14px;
+
+    outline:none;
+
+    background:var(--soft);
+
+    color:var(--text);
+}
+
+.modal-btn{
+    width:100%;
+
+    margin-top:14px;
+
+    padding:14px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:var(--text);
+
+    color:var(--bg);
+
+    font-weight:800;
+
+    cursor:pointer;
+}
+
+.modal-message{
+    margin-top:12px;
+
+    color:var(--muted);
+
+    font-size:12px;
+
+    text-align:center;
+}
+
+/* ================= SETTINGS ================= */
+
+.setting-row{
+    display:flex;
+
+    align-items:center;
+    justify-content:space-between;
+
+    padding:15px 0;
+
+    border-bottom:1px solid var(--border);
+}
+
+.setting-row:last-child{
+    border-bottom:0;
+}
+
+.setting-info strong{
+    display:block;
+
+    font-size:14px;
+}
+
+.setting-info small{
+    display:block;
+
+    margin-top:3px;
+
+    color:var(--muted);
+
+    font-size:10px;
+}
+
+.switch{
+    width:48px;
+    height:27px;
+
+    border:0;
+
+    border-radius:30px;
+
+    background:#30333d;
+
+    cursor:pointer;
+
+    position:relative;
+}
+
+.switch::after{
+    content:"";
+
+    position:absolute;
+
+    top:4px;
+    left:4px;
+
+    width:19px;
+    height:19px;
+
+    border-radius:50%;
+
+    background:white;
+
+    transition:.25s;
+}
+
+.switch.active{
+    background:#6d61ff;
+}
+
+.switch.active::after{
+    left:25px;
+}
+
+/* ================= FOOTER ================= */
+
+footer{
+    padding:35px 6%;
+
+    border-top:1px solid var(--border);
+
+    text-align:center;
+
+    color:var(--muted);
+
+    font-size:11px;
+}
+
+footer strong{
+    color:var(--text);
+}
+
+/* ================= MOBILE FIX ================= */
+
+@media(max-width:850px){
+
+    .categories{
+        grid-template-columns:
+            repeat(2,minmax(0,1fr));
+    }
+
+    .features{
+        grid-template-columns:
+            repeat(2,minmax(0,1fr));
+    }
+}
+
+@media(max-width:600px){
+
+    header{
+        height:65px;
+
+        padding:0 16px;
+    }
+
+    .logo-text{
+        font-size:18px;
+    }
+
+    .logo-mark{
+        width:37px;
+        height:37px;
+    }
+
+    .login-btn{
+        display:none;
+    }
+
+    .hero{
+        min-height:calc(100vh - 65px);
+
+        padding:55px 18px 70px;
+    }
+
+    .hero h1{
+        letter-spacing:-2.5px;
+    }
+
+    .hero p{
+        font-size:14px;
+    }
+
+    section{
+        padding:60px 17px;
+    }
+
+    /* Mobile/Laptop/Keyboard cards now stack properly */
+    .categories{
+        width:100%;
+
+        display:grid;
+
+        grid-template-columns:1fr;
+
+        gap:14px;
+    }
+
+    .category{
+        width:100%;
+        min-height:185px;
+
+        padding:22px;
+    }
+
+    .features{
+        width:100%;
+
+        display:grid;
+
+        grid-template-columns:1fr;
+
+        gap:14px;
+    }
+
+    .feature{
+        width:100%;
+    }
+
+    .side-menu{
+        width:315px;
+    }
+}
+
+@media(max-width:380px){
+
+    .hero h1{
+        font-size:40px;
+    }
+
+    .category{
+        min-height:170px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+
+<header>
+
+    <a href="index.html" class="logo">
+
+        <div class="logo-mark">
+            <span class="wallpaper-icon"></span>
+        </div>
+
+        <div class="logo-text">
+            Wallora
+        </div>
+
+    </a>
+
+
+    <div class="header-right">
+
+        <button class="login-btn" onclick="openLogin()">
+            Login
+        </button>
+
+        <!-- Moon icon removed -->
+        <button
+            class="menu-btn"
+            onclick="openMenu()"
+            aria-label="Open menu">
+            ☰
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- ================= SIDE MENU ================= -->
+
+<div
+    class="menu-overlay"
+    id="menuOverlay"
+    onclick="closeMenu()">
+</div>
+
+
+<aside class="side-menu" id="sideMenu">
+
+    <div class="menu-header">
+
+        <div class="menu-brand">
+
+            <div class="menu-brand-icon">
+                <span class="wallpaper-icon"></span>
+            </div>
+
+            <div>
+                <h3>Wallora</h3>
+
+                <span>
+                    Premium Wallpaper Collection
+                </span>
+            </div>
+
+        </div>
+
+
+        <button
+            class="menu-close"
+            onclick="closeMenu()">
+            ✕
+        </button>
+
+    </div>
+
+
+    <div class="menu-items">
+
+        <a
+            href="index.html"
+            class="menu-item">
+
+            <div class="menu-icon">
+                ⌂
+            </div>
+
+            <div class="menu-text">
+                <strong>Home</strong>
+
+                <small>
+                    Back to Wallora home
+                </small>
+            </div>
+
+            <div class="menu-arrow">
+                ›
+            </div>
+
+        </a>
+
+
+        <a
+            href="mobile.html"
+            class="menu-item">
+
+            <div class="menu-icon">
+                📱
+            </div>
+
+            <div class="menu-text">
+
+                <strong>
+                    Mobile Wallpapers
+                </strong>
+
+                <small>
+                    Premium phone wallpapers
+                </small>
+
+            </div>
+
+            <div class="menu-arrow">
+                ›
+            </div>
+
+        </a>
+
+
+        <a
+            href="laptop.html"
+            class="menu-item">
+
+            <div class="menu-icon">
+                💻
+            </div>
+
+            <div class="menu-text">
+
+                <strong>
+                    Laptop Wallpapers
+                </strong>
+
+                <small>
+                    HD & 4K desktop wallpapers
+                </small>
+
+            </div>
+
+            <div class="menu-arrow">
+                ›
+            </div>
+
+        </a>
+
+
+        <a
+            href="keyboard.html"
+            class="menu-item">
+
+            <div class="menu-icon">
+                ⌨️
+            </div>
+
+            <div class="menu-text">
+
+                <strong>
+                    Keyboard Wallpapers
+                </strong>
+
+                <small>
+                    Beautiful keyboard setups
+                </small>
+
+            </div>
+
+            <div class="menu-arrow">
+                ›
+            </div>
+
+        </a>
+
+
+        <div class="menu-divider"></div>
+
+
+        <button
+            class="menu-item"
+            onclick="openSettings()">
+
+            <div class="menu-icon">
+                ⚙️
+            </div>
+
+            <div class="menu-text">
+
+                <strong>
+                    Settings
+                </strong>
+
+                <small>
+                    Theme & preferences
+                </small>
+
+            </div>
+
+            <div class="menu-arrow">
+                ›
+            </div>
+
+        </button>
+
+    </div>
+
+
+    <div class="menu-footer">
+
+        <strong>
+            © 2026 Wallora
+        </strong>
+
+        <span>
+            Created by Deepak Paweria
+        </span>
+
+    </div>
+
+</aside>
+
+
+<!-- ================= HERO ================= -->
+
+<main>
+
+<section class="hero">
+
+    <div class="hero-inner">
+
+        <div class="badge">
+
+            <span class="badge-dot"></span>
+
+            PREMIUM WALLPAPER COLLECTION
+
+        </div>
+
+
+        <h1>
+            Your screen.<br>
+            <span>Your style.</span>
+        </h1>
+
+
+        <p>
+            Discover beautiful wallpapers made for your
+            mobile, laptop and keyboard. Simple, premium
+            and built for you.
+        </p>
+
+
+        <div class="hero-buttons">
+
+            <a
+                href="#categories"
+                class="primary-btn">
+                Explore Wallpapers
+            </a>
+
+
+            <a
+                href="mobile.html"
+                class="secondary-btn">
+                Browse Mobile
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= CATEGORIES ================= -->
+
+<section id="categories">
+
+    <div class="section-head">
+
+        <h2>
+            Explore Wallora
+        </h2>
+
+        <p>
+            Choose your device and discover wallpapers
+            designed to make your screen look better.
+        </p>
+
+    </div>
+
+
+    <div class="categories">
+
+        <a
+            href="mobile.html"
+            class="category">
+
+            <div class="category-icon">
+                📱
+            </div>
+
+            <h3>
+                Mobile
+            </h3>
+
+            <p>
+                Anime • Dark • Nature • Cars • Bike
+            </p>
+
+        </a>
+
+
+        <a
+            href="laptop.html"
+            class="category">
+
+            <div class="category-icon">
+                💻
+            </div>
+
+            <h3>
+                Laptop
+            </h3>
+
+            <p>
+                HD • 4K • Gaming • Minimal
+            </p>
+
+        </a>
+
+
+        <a
+            href="keyboard.html"
+            class="category">
+
+            <div class="category-icon">
+                ⌨️
+            </div>
+
+            <h3>
+                Keyboard
+            </h3>
+
+            <p>
+                Setup • RGB • Minimal • Aesthetic
+            </p>
+
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- ================= FEATURES ================= -->
+
+<section>
+
+    <div class="section-head">
+
+        <h2>
+            Made for Wallpaper Lovers
+        </h2>
+
+        <p>
+            Everything you need for a clean and beautiful
+            wallpaper experience.
+        </p>
+
+    </div>
+
+
+    <div class="features">
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                ✨
+            </div>
+
+            <h3>
+                Premium Collection
+            </h3>
+
+            <p>
+                Carefully selected wallpapers with
+                a clean and modern visual experience.
+            </p>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                ⚡
+            </div>
+
+            <h3>
+                Fast Experience
+            </h3>
+
+            <p>
+                Lightweight pages designed to load
+                quickly on mobile and desktop.
+            </p>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                ❤️
+            </div>
+
+            <h3>
+                Made with Love
+            </h3>
+
+            <p>
+                Wallora is built to make your everyday
+                screen feel a little more personal.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+</main>
+
+
+<!-- ================= LOGIN MODAL ================= -->
+
+<div
+    class="modal-overlay"
+    id="loginModal">
+
+    <div class="modal">
+
+        <div class="modal-top">
+
+            <h2>
+                Welcome to Wallora
+            </h2>
+
+            <button
+                class="modal-close"
+                onclick="closeLogin()">
+                ✕
+            </button>
+
+        </div>
+
+
+        <input
+            class="input"
+            id="email"
+            type="email"
+            placeholder="Email address"
+        >
+
+
+        <input
+            class="input"
+            id="password"
+            type="password"
+            placeholder="Password"
+        >
+
+
+        <button
+            class="modal-btn"
+            onclick="loginUser()">
+            Login
+        </button>
+
+
+        <div
+            class="modal-message"
+            id="loginMessage">
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ================= SETTINGS MODAL ================= -->
+
+<div
+    class="modal-overlay"
+    id="settingsModal">
+
+    <div class="modal">
+
+        <div class="modal-top">
+
+            <h2>
+                Settings
+            </h2>
+
+            <button
+                class="modal-close"
+                onclick="closeSettings()">
+                ✕
+            </button>
+
+        </div>
+
+
+        <div class="setting-row">
+
+            <div class="setting-info">
+
+                <strong>
+                    Appearance
+                </strong>
+
+                <small>
+                    Switch between dark and light mode
+                </small>
+
+            </div>
+
+
+            <button
+                class="switch"
+                id="themeSwitch"
+                onclick="toggleTheme()">
+            </button>
+
+        </div>
+
+
+        <div class="setting-row">
+
+            <div class="setting-info">
+
+                <strong>
+                    Wallora Theme
+                </strong>
+
+                <small>
+                    Your theme is synced across pages
+                </small>
+
+            </div>
+
+            <span>
+                🔄
+            </span>
+
+        </div>
+
+
+        <div class="setting-row">
+
+            <div class="setting-info">
+
+                <strong>
+                    Downloads
+                </strong>
+
+                <small>
+                    Save your favourite wallpapers
+                </small>
+
+            </div>
+
+            <span>
+                ⬇️
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+    © 2026
+    <strong>Wallora</strong>
+    • Created by Deepak Paweria
+
+</footer>
+
+
+<script>
+
+/* ================= SUPABASE ================= */
+
+const SUPABASE_URL =
+"https://frsdscguevzqqkzbwxxy.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_fzXOjFFKz_QXtZagfGXpEA_xgf1cZfN";
+
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+/* ================= MENU ================= */
+
+function openMenu(){
+
+    document
+        .getElementById("sideMenu")
+        .classList.add("active");
+
+    document
+        .getElementById("menuOverlay")
+        .classList.add("active");
+
+    document.body.style.overflow="hidden";
+}
+
+
+function closeMenu(){
+
+    document
+        .getElementById("sideMenu")
+        .classList.remove("active");
+
+    document
+        .getElementById("menuOverlay")
+        .classList.remove("active");
+
+    document.body.style.overflow="";
+}
+
+
+/* ================= LOGIN ================= */
+
+function openLogin(){
+
+    document
+        .getElementById("loginModal")
+        .classList.add("show");
+
+    closeMenu();
+}
+
+
+function closeLogin(){
+
+    document
+        .getElementById("loginModal")
+        .classList.remove("show");
+}
+
+
+async function loginUser(){
+
+    const email =
+        document
+        .getElementById("email")
+        .value
+        .trim();
+
+    const password =
+        document
+        .getElementById("password")
+        .value;
+
+    const message =
+        document
+        .getElementById("loginMessage");
+
+
+    if(!email || !password){
+
+        message.innerText =
+            "Please enter email and password.";
+
+        return;
+    }
+
+
+    message.innerText =
+        "Logging in...";
+
+
+    const {error} =
+        await supabaseClient.auth
+        .signInWithPassword({
+            email,
+            password
+        });
+
+
+    if(error){
+
+        message.innerText =
+            "❌ "+error.message;
+
+        return;
+    }
+
+
+    message.innerText =
+        "✅ Login successful!";
+
+
+    setTimeout(()=>{
+
+        closeLogin();
+
+    },800);
+}
+
+
+/* ================= SETTINGS ================= */
+
+function openSettings(){
+
+    closeMenu();
+
+    document
+        .getElementById("settingsModal")
+        .classList.add("show");
+
+    updateThemeSwitch();
+}
+
+
+function closeSettings(){
+
+    document
+        .getElementById("settingsModal")
+        .classList.remove("show");
+}
+
+
+/* ================= THEME ================= */
+
+const WALLORA_THEME_KEY =
+"wallora-theme";
+
+
+function getTheme(){
+
+    const saved =
+        localStorage.getItem(
+            WALLORA_THEME_KEY
+        );
+
+    return saved === "light"
+        ? "light"
+        : "dark";
+}
+
+
+function applyTheme(theme){
+
+    document.body.classList.toggle(
+        "light",
+        theme === "light"
+    );
+
+    updateThemeSwitch();
+}
+
+
+function updateThemeSwitch(){
+
+    const switchButton =
+        document.getElementById(
+            "themeSwitch"
+        );
+
+    if(!switchButton) return;
+
+    switchButton.classList.toggle(
+        "active",
+        getTheme() === "light"
+    );
+}
+
+
+function toggleTheme(){
+
+    const current =
+        getTheme();
+
+    const newTheme =
+        current === "light"
+            ? "dark"
+            : "light";
+
+
+    localStorage.setItem(
+        WALLORA_THEME_KEY,
+        newTheme
+    );
+
+
+    applyTheme(newTheme);
+}
+
+
+/* ================= THEME SYNC ================= */
+
+window.addEventListener(
+    "storage",
+    function(event){
+
+        if(event.key === WALLORA_THEME_KEY){
+
+            applyTheme(
+                event.newValue === "light"
+                    ? "light"
+                    : "dark"
+            );
+
+        }
+
+    }
+);
+
+
+window.addEventListener(
+    "focus",
+    function(){
+
+        applyTheme(getTheme());
+
+    }
+);
+
+
+document.addEventListener(
+    "visibilitychange",
+    function(){
+
+        if(!document.hidden){
+
+            applyTheme(getTheme());
+
+        }
+
+    }
+);
+
+
+/* ================= ESCAPE ================= */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        if(event.key === "Escape"){
+
+            closeMenu();
+            closeLogin();
+            closeSettings();
+
+        }
+
+    }
+);
+
+
+/* ================= START ================= */
+
+applyTheme(getTheme());
+
+</script>
+
+</body>
+</html>
