@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Wallora • Premium Wallpapers</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+    --bg:#07080d;
+    --card:#11131b;
+    --text:#fff;
+    --muted:#a8adbd;
+    --border:rgba(255,255,255,.09);
+    --accent:#8b5cf6;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    overflow-x:hidden;
+}
+
+a{
+    color:inherit;
+    text-decoration:none;
+}
+
+button{
+    font:inherit;
+    cursor:pointer;
+}
+
+
+/* ================= HEADER ================= */
+
+header{
+    height:72px;
+    width:100%;
+    position:sticky;
+    top:0;
+    z-index:1000;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 6%;
+    background:rgba(7,8,13,.82);
+    backdrop-filter:blur(18px);
+    border-bottom:1px solid var(--border);
+}
+
+.logo{
+    font-size:25px;
+    font-weight:800;
+    letter-spacing:-1px;
+}
+
+.logo span{
+    color:#9b6cff;
+}
+
+.header-actions{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.login-btn,
+.menu-btn{
+    border:1px solid var(--border);
+    background:rgba(255,255,255,.06);
+    color:#fff;
+    border-radius:12px;
+    padding:10px 16px;
+    transition:.25s;
+}
+
+.login-btn:hover,
+.menu-btn:hover{
+    background:rgba(255,255,255,.12);
+    transform:translateY(-1px);
+}
+
+
+/* ================= SIDE MENU ================= */
+
+.side-menu{
+    position:fixed;
+    top:0;
+    right:-330px;
+    width:310px;
+    height:100vh;
+    z-index:2000;
+    padding:85px 25px 30px;
+    background:#0d0f17;
+    border-left:1px solid var(--border);
+    transition:.35s ease;
+}
+
+.side-menu.active{
+    right:0;
+}
+
+.close-menu{
+    position:absolute;
+    top:20px;
+    right:20px;
+    background:none;
+    border:0;
+    color:#fff;
+    font-size:27px;
+}
+
+.side-menu a{
+    display:block;
+    padding:15px;
+    margin-bottom:8px;
+    border-radius:12px;
+    color:#d9dce7;
+    transition:.25s;
+}
+
+.side-menu a:hover{
+    background:rgba(139,92,246,.15);
+    color:#fff;
+}
+
+.overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.55);
+    z-index:1500;
+    display:none;
+}
+
+.overlay.active{
+    display:block;
+}
+
+
+/* ================= HERO ================= */
+
+.hero{
+    width:100%;
+    min-height:calc(100vh - 72px);
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:70px 6% 90px;
+    text-align:center;
+    overflow:hidden;
+
+    background-image:
+
+        linear-gradient(
+            to bottom,
+            rgba(0,0,0,.18),
+            rgba(0,0,0,.30) 40%,
+            rgba(7,8,13,.96) 100%
+        ),
+
+        linear-gradient(
+            90deg,
+            rgba(0,0,0,.58),
+            rgba(0,0,0,.10),
+            rgba(0,0,0,.58)
+        ),
+
+        url(
+            "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2200&q=90"
+        );
+
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+}
+
+.hero::before{
+    content:"";
+    position:absolute;
+    width:500px;
+    height:500px;
+    border-radius:50%;
+    background:rgba(139,92,246,.15);
+    filter:blur(100px);
+    top:-250px;
+    left:-150px;
+    pointer-events:none;
+}
+
+.hero::after{
+    content:"";
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    height:40%;
+    background:linear-gradient(to top,#07080d,transparent);
+    pointer-events:none;
+}
+
+.hero-content{
+    max-width:900px;
+    position:relative;
+    z-index:5;
+    animation:heroFade .9s ease both;
+}
+
+@keyframes heroFade{
+    from{
+        opacity:0;
+        transform:translateY(22px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.badge{
+    display:inline-flex;
+    align-items:center;
+    padding:10px 18px;
+    margin-bottom:24px;
+    border:1px solid rgba(255,255,255,.25);
+    background:rgba(0,0,0,.30);
+    backdrop-filter:blur(14px);
+    border-radius:100px;
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:2px;
+    color:#fff;
+    box-shadow:0 10px 35px rgba(0,0,0,.35);
+}
+
+.badge::before{
+    content:"✦";
+    color:#c4a5ff;
+    margin-right:8px;
+    font-size:14px;
+}
+
+.hero h1{
+    font-size:clamp(55px,9vw,105px);
+    line-height:.94;
+    letter-spacing:-5px;
+    font-weight:900;
+    margin-bottom:26px;
+    color:#fff;
+    text-shadow:
+        0 5px 25px rgba(0,0,0,.75),
+        0 15px 60px rgba(0,0,0,.65);
+}
+
+.hero h1 span{
+    background:linear-gradient(
+        90deg,
+        #ffffff,
+        #c4a5ff,
+        #ffffff
+    );
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-size:200% auto;
+    animation:walloraShine 4s linear infinite;
+}
+
+@keyframes walloraShine{
+    to{
+        background-position:200% center;
+    }
+}
+
+.hero p{
+    max-width:650px;
+    margin:auto;
+    color:rgba(255,255,255,.90);
+    font-size:18px;
+    line-height:1.75;
+    text-shadow:0 3px 18px rgba(0,0,0,.9);
+}
+
+.hero-buttons{
+    margin-top:34px;
+    display:flex;
+    justify-content:center;
+    gap:14px;
+    flex-wrap:wrap;
+}
+
+.primary-btn,
+.secondary-btn{
+    padding:15px 25px;
+    border-radius:15px;
+    font-weight:800;
+    transition:.3s ease;
+}
+
+.primary-btn{
+    background:#fff;
+    color:#08090e;
+    border:1px solid #fff;
+    box-shadow:0 12px 35px rgba(0,0,0,.35);
+}
+
+.primary-btn:hover{
+    transform:translateY(-4px);
+    box-shadow:0 18px 45px rgba(0,0,0,.5);
+}
+
+.secondary-btn{
+    background:rgba(0,0,0,.30);
+    color:#fff;
+    border:1px solid rgba(255,255,255,.25);
+    backdrop-filter:blur(12px);
+}
+
+.secondary-btn:hover{
+    background:rgba(255,255,255,.15);
+    transform:translateY(-4px);
+}
+
+.banner-caption{
+    position:absolute;
+    bottom:25px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:6;
+    color:rgba(255,255,255,.65);
+    font-size:11px;
+    letter-spacing:2px;
+    white-space:nowrap;
+}
+
+
+/* ================= SECTIONS ================= */
+
+section{
+    padding:80px 6%;
+}
+
+.section-title{
+    text-align:center;
+    margin-bottom:45px;
+}
+
+.section-title h2{
+    font-size:38px;
+    margin-bottom:10px;
+}
+
+.section-title p{
+    color:var(--muted);
+}
+
+
+/* ================= CATEGORIES ================= */
+
+.categories{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+}
+
+.category-card{
+    min-height:210px;
+    padding:28px;
+    border:1px solid var(--border);
+    border-radius:22px;
+    background:linear-gradient(
+        145deg,
+        rgba(255,255,255,.07),
+        rgba(255,255,255,.025)
+    );
+    transition:.3s;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+}
+
+.category-card:hover{
+    transform:translateY(-6px);
+    border-color:rgba(139,92,246,.45);
+}
+
+.category-icon{
+    font-size:38px;
+    margin-bottom:auto;
+}
+
+.category-card h3{
+    font-size:24px;
+    margin-bottom:7px;
+}
+
+.category-card p{
+    color:var(--muted);
+}
+
+
+/* ================= FEATURES ================= */
+
+.features{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+}
+
+.feature{
+    padding:30px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:20px;
+}
+
+.feature-icon{
+    font-size:30px;
+    margin-bottom:20px;
+}
+
+.feature h3{
+    margin-bottom:10px;
+}
+
+.feature p{
+    color:var(--muted);
+    line-height:1.6;
+}
+
+
+/* ================= FOOTER ================= */
+
+footer{
+    padding:35px 6%;
+    text-align:center;
+    color:#777c8d;
+    border-top:1px solid var(--border);
+}
+
+
+/* ================= MODALS ================= */
+
+.modal{
+    position:fixed;
+    inset:0;
+    z-index:3000;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:rgba(0,0,0,.72);
+    backdrop-filter:blur(8px);
+}
+
+.modal.active{
+    display:flex;
+}
+
+.modal-box{
+    width:100%;
+    max-width:420px;
+    max-height:90vh;
+    overflow-y:auto;
+    background:#10121a;
+    border:1px solid var(--border);
+    border-radius:22px;
+    padding:28px;
+    position:relative;
+    box-shadow:0 25px 80px rgba(0,0,0,.5);
+}
+
+.modal-box h2{
+    margin-bottom:20px;
+}
+
+.modal-close{
+    position:absolute;
+    right:18px;
+    top:15px;
+    background:none;
+    border:0;
+    color:#fff;
+    font-size:25px;
+}
+
+.input{
+    width:100%;
+    padding:14px;
+    margin-bottom:12px;
+    border-radius:12px;
+    border:1px solid var(--border);
+    outline:none;
+    background:#080910;
+    color:#fff;
+}
+
+.input:focus{
+    border-color:#8b5cf6;
+}
+
+.submit-btn{
+    width:100%;
+    padding:14px;
+    border:0;
+    border-radius:12px;
+    background:#8b5cf6;
+    color:#fff;
+    font-weight:700;
+    transition:.25s;
+}
+
+.submit-btn:hover{
+    background:#7544e8;
+    transform:translateY(-1px);
+}
+
+.message{
+    margin-top:12px;
+    color:#ff9b9b;
+    font-size:14px;
+    line-height:1.5;
+}
+
+.forgot-btn,
+.back-login{
+    display:block;
+    width:max-content;
+    margin:14px auto 0;
+    background:none;
+    border:0;
+    color:#b99aff;
+    font-size:14px;
+}
+
+.forgot-btn:hover,
+.back-login:hover{
+    color:#fff;
+    text-decoration:underline;
+}
+
+.settings-btn{
+    width:100%;
+    margin-bottom:12px;
+    padding:14px 18px;
+    border-radius:13px;
+    border:1px solid var(--border);
+    background:rgba(255,255,255,.06);
+    color:#fff;
+}
+
+.settings-btn:hover{
+    background:rgba(139,92,246,.15);
+}
+
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:800px){
+
+    .categories,
+    .features{
+        grid-template-columns:1fr;
+    }
+
+    .hero{
+        min-height:calc(100vh - 72px);
+        padding:50px 20px 70px;
+        background-position:center center;
+    }
+
+    .hero h1{
+        font-size:54px;
+        letter-spacing:-3px;
+    }
+
+    .hero p{
+        font-size:16px;
+    }
+
+    section{
+        padding:60px 20px;
+    }
+
+    .section-title h2{
+        font-size:30px;
+    }
+
+    header{
+        padding:0 20px;
+    }
+}
+
+@media(max-width:430px){
+
+    .logo{
+        font-size:22px;
+    }
+
+    .login-btn{
+        padding:9px 12px;
+    }
+
+    .menu-btn{
+        padding:9px 12px;
+    }
+
+    .hero h1{
+        font-size:45px;
+    }
+
+    .hero-buttons{
+        flex-direction:column;
+    }
+
+    .primary-btn,
+    .secondary-btn{
+        width:100%;
+    }
+
+    .banner-caption{
+        font-size:9px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+
+<header>
+
+    <a href="index.html" class="logo">
+        Wal<span>lora</span>
+    </a>
+
+    <div class="header-actions">
+
+        <button
+            class="login-btn"
+            id="loginHeaderBtn"
+            onclick="handleLoginButton()">
+            Login
+        </button>
+
+        <button
+            class="menu-btn"
+            onclick="openMenu()">
+            ☰
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- ================= OVERLAY ================= -->
+
+<div
+    class="overlay"
+    id="overlay"
+    onclick="closeMenu()">
+</div>
+
+
+<!-- ================= SIDE MENU ================= -->
+
+<div
+    class="side-menu"
+    id="sideMenu">
+
+    <button
+        class="close-menu"
+        onclick="closeMenu()">
+        ×
+    </button>
+
+    <a href="index.html">
+        🏠 Home
+    </a>
+
+    <a href="mobile.html">
+        📱 Mobile Wallpapers
+    </a>
+
+    <a href="laptop.html">
+        💻 Laptop Wallpapers
+    </a>
+
+    <a href="keyboard.html">
+        ⌨️ Keyboard Wallpapers
+    </a>
+
+    <a
+        href="#"
+        onclick="openSettings();closeMenu();return false;">
+        ⚙️ Settings
+    </a>
+
+</div>
+
+
+<!-- ================= HERO ================= -->
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <div class="badge">
+            PREMIUM WALLPAPER COLLECTION
+        </div>
+
+        <h1>
+            Wallora.<br>
+            Your <span>style.</span>
+        </h1>
+
+        <p>
+            Discover premium wallpapers for your mobile,
+            laptop and keyboard. Give your screen the look
+            it deserves with Wallora.
+        </p>
+
+        <div class="hero-buttons">
+
+            <a
+                href="mobile.html"
+                class="primary-btn">
+                Explore Wallpapers
+            </a>
+
+            <a
+                href="mobile.html"
+                class="secondary-btn">
+                Browse Mobile
+            </a>
+
+        </div>
+
+    </div>
+
+    <div class="banner-caption">
+        Wallora • Premium Wallpapers
+    </div>
+
+</section>
+
+
+<!-- ================= CATEGORIES ================= -->
+
+<section>
+
+    <div class="section-title">
+
+        <h2>
+            Choose Your Style
+        </h2>
+
+        <p>
+            Find the perfect wallpaper for your screen.
+        </p>
+
+    </div>
+
+    <div class="categories">
+
+        <a
+            href="mobile.html"
+            class="category-card">
+
+            <div class="category-icon">
+                📱
+            </div>
+
+            <h3>
+                Mobile
+            </h3>
+
+            <p>
+                Beautiful wallpapers made for phones.
+            </p>
+
+        </a>
+
+
+        <a
+            href="laptop.html"
+            class="category-card">
+
+            <div class="category-icon">
+                💻
+            </div>
+
+            <h3>
+                Laptop
+            </h3>
+
+            <p>
+                HD & 4K wallpapers for your desktop.
+            </p>
+
+        </a>
+
+
+        <a
+            href="keyboard.html"
+            class="category-card">
+
+            <div class="category-icon">
+                ⌨️
+            </div>
+
+            <h3>
+                Keyboard
+            </h3>
+
+            <p>
+                Stylish backgrounds for your keyboard.
+            </p>
+
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- ================= FEATURES ================= -->
+
+<section>
+
+    <div class="section-title">
+
+        <h2>
+            Why Wallora?
+        </h2>
+
+        <p>
+            A premium wallpaper experience made simple.
+        </p>
+
+    </div>
+
+
+    <div class="features">
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                ✨
+            </div>
+
+            <h3>
+                Premium Collection
+            </h3>
+
+            <p>
+                Carefully selected wallpapers with
+                beautiful designs and high quality.
+            </p>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                ⚡
+            </div>
+
+            <h3>
+                Fast Experience
+            </h3>
+
+            <p>
+                Browse and discover wallpapers quickly
+                with a clean and lightweight interface.
+            </p>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                ❤️
+            </div>
+
+            <h3>
+                Made with Love
+            </h3>
+
+            <p>
+                Wallora is designed to make your screen
+                look more personal and beautiful.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+    © 2026 Wallora • Created by Deepak Paweria
+</footer>
+
+
+<!-- ================= LOGIN MODAL ================= -->
+
+<div
+    class="modal"
+    id="loginModal">
+
+    <div class="modal-box">
+
+        <button
+            class="modal-close"
+            onclick="closeLogin()">
+            ×
+        </button>
+
+        <h2>
+            Welcome Back 👋
+        </h2>
+
+        <input
+            class="input"
+            id="loginEmail"
+            type="email"
+            placeholder="Email">
+
+        <input
+            class="input"
+            id="loginPassword"
+            type="password"
+            placeholder="Password">
+
+        <button
+            class="submit-btn"
+            onclick="loginUser()">
+            Login
+        </button>
+
+        <button
+            class="forgot-btn"
+            onclick="openForgotPassword()">
+            Forgot Password?
+        </button>
+
+        <div
+            class="message"
+            id="loginMessage">
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ================= FORGOT PASSWORD ================= -->
+
+<div
+    class="modal"
+    id="forgotModal">
+
+    <div class="modal-box">
+
+        <button
+            class="modal-close"
+            onclick="closeForgotPassword()">
+            ×
+        </button>
+
+        <h2>
+            Reset Password 🔐
+        </h2>
+
+        <p
+            style="
+                color:#a8adbd;
+                line-height:1.6;
+                margin-bottom:18px;
+            ">
+
+            Enter your registered email and we'll send
+            you a password reset link.
+
+        </p>
+
+        <input
+            class="input"
+            id="forgotEmail"
+            type="email"
+            placeholder="Enter your email">
+
+        <button
+            class="submit-btn"
+            onclick="sendResetLink()">
+            Send Reset Link
+        </button>
+
+        <button
+            class="back-login"
+            onclick="backToLogin()">
+            ← Back to Login
+        </button>
+
+        <div
+            class="message"
+            id="forgotMessage">
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ================= NEW PASSWORD ================= -->
+
+<div
+    class="modal"
+    id="resetModal">
+
+    <div class="modal-box">
+
+        <h2>
+            Create New Password 🔑
+        </h2>
+
+        <p
+            style="
+                color:#a8adbd;
+                line-height:1.6;
+                margin-bottom:18px;
+            ">
+
+            Enter a new password for your Wallora account.
+
+        </p>
+
+        <input
+            class="input"
+            id="newPassword"
+            type="password"
+            placeholder="New password">
+
+        <input
+            class="input"
+            id="confirmPassword"
+            type="password"
+            placeholder="Confirm new password">
+
+        <button
+            class="submit-btn"
+            onclick="updatePassword()">
+            Update Password
+        </button>
+
+        <div
+            class="message"
+            id="resetMessage">
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ================= SETTINGS ================= -->
+
+<div
+    class="modal"
+    id="settingsModal">
+
+    <div class="modal-box">
+
+        <button
+            class="modal-close"
+            onclick="closeSettings()">
+            ×
+        </button>
+
+        <h2>
+            Settings ⚙️
+        </h2>
+
+        <button
+            class="settings-btn"
+            onclick="toggleTheme()">
+            🌙 Change Theme
+        </button>
+
+        <button
+            class="settings-btn"
+            onclick="closeSettings();openLogin();">
+            🔐 Account / Login
+        </button>
+
+        <button
+            class="settings-btn"
+            onclick="logoutUser()">
+            🚪 Logout
+        </button>
+
+        <p
+            style="
+                color:#a8adbd;
+                line-height:1.6;
+                margin-top:8px;
+            ">
+
+            Your theme preference is saved automatically
+            on this device.
+
+        </p>
+
+        <div
+            class="message"
+            id="settingsMessage">
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script>
+
+/* =================================================
+   SUPABASE
+================================================= */
+
+const SUPABASE_URL =
+"https://frsdscguevzqqkzbwxxy.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_QFKLim7EOGmn-7kjHAONDA_0k-L_YxU";
+
+const supabaseClient =
+supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+/* =================================================
+   MENU
+================================================= */
+
+function openMenu(){
+
+    document
+        .getElementById("sideMenu")
+        .classList.add("active");
+
+    document
+        .getElementById("overlay")
+        .classList.add("active");
+}
+
+
+function closeMenu(){
+
+    document
+        .getElementById("sideMenu")
+        .classList.remove("active");
+
+    document
+        .getElementById("overlay")
+        .classList.remove("active");
+}
+
+
+/* =================================================
+   LOGIN
+================================================= */
+
+function openLogin(){
+
+    document
+        .getElementById("loginModal")
+        .classList.add("active");
+}
+
+
+function closeLogin(){
+
+    document
+        .getElementById("loginModal")
+        .classList.remove("active");
+}
+
+
+function handleLoginButton(){
+
+    supabaseClient.auth.getSession()
+    .then(({data}) => {
+
+        if(data.session){
+
+            openSettings();
+
+        }else{
+
+            openLogin();
+
+        }
+
+    })
+    .catch(error => {
+
+        console.error(error);
+
+        openLogin();
+
+    });
+
+}
+
+
+async function loginUser(){
+
+    const email =
+        document
+        .getElementById("loginEmail")
+        .value
+        .trim();
+
+    const password =
+        document
+        .getElementById("loginPassword")
+        .value;
+
+    const message =
+        document
+        .getElementById("loginMessage");
+
+    message.style.color="#ff9b9b";
+    message.textContent="Logging in...";
+
+    if(!email || !password){
+
+        message.textContent =
+            "Please enter email and password.";
+
+        return;
+    }
+
+    const {data,error} =
+        await supabaseClient.auth
+        .signInWithPassword({
+
+            email:email,
+            password:password
+
+        });
+
+    if(error){
+
+        message.textContent =
+            error.message;
+
+        return;
+    }
+
+    message.style.color =
+        "#8affb0";
+
+    message.textContent =
+        "Login successful!";
+
+    updateLoginButton();
+
+    setTimeout(()=>{
+
+        closeLogin();
+
+    },800);
+
+}
+
+
+/* =================================================
+   FORGOT PASSWORD
+================================================= */
+
+function openForgotPassword(){
+
+    const loginEmail =
+        document
+        .getElementById("loginEmail")
+        .value
+        .trim();
+
+    document
+        .getElementById("forgotEmail")
+        .value =
+            loginEmail;
+
+    closeLogin();
+
+    document
+        .getElementById("forgotModal")
+        .classList.add("active");
+
+}
+
+
+function closeForgotPassword(){
+
+    document
+        .getElementById("forgotModal")
+        .classList.remove("active");
+
+}
+
+
+function backToLogin(){
+
+    closeForgotPassword();
+
+    openLogin();
+
+}
+
+
+async function sendResetLink(){
+
+    const email =
+        document
+        .getElementById("forgotEmail")
+        .value
+        .trim();
+
+    const message =
+        document
+        .getElementById("forgotMessage");
+
+    message.style.color="#ff9b9b";
+
+    if(!email){
+
+        message.textContent =
+            "Please enter your registered email.";
+
+        return;
+    }
+
+    message.style.color="#a8adbd";
+
+    message.textContent =
+        "Sending reset link...";
+
+
+    const redirectUrl =
+        window.location.origin +
+        window.location.pathname;
+
+
+    const {error} =
+        await supabaseClient.auth
+        .resetPasswordForEmail(
+
+            email,
+
+            {
+                redirectTo:redirectUrl
+            }
+
+        );
+
+
+    if(error){
+
+        message.style.color="#ff9b9b";
+
+        message.textContent =
+            error.message;
+
+        return;
+    }
+
+
+    message.style.color="#8affb0";
+
+    message.textContent =
+        "Reset link sent! Please check your email.";
+
+}
+
+
+/* =================================================
+   PASSWORD RECOVERY
+================================================= */
+
+supabaseClient.auth.onAuthStateChange(
+    async (event, session) => {
+
+        if(event === "PASSWORD_RECOVERY"){
+
+            document
+                .getElementById("loginModal")
+                .classList.remove("active");
+
+            document
+                .getElementById("forgotModal")
+                .classList.remove("active");
+
+            document
+                .getElementById("resetModal")
+                .classList.add("active");
+
+        }
+
+        if(event === "SIGNED_IN"){
+
+            updateLoginButton();
+
+        }
+
+        if(event === "SIGNED_OUT"){
+
+            updateLoginButton();
+
+        }
+
+    }
+);
+
+
+/* =================================================
+   UPDATE PASSWORD
+================================================= */
+
+async function updatePassword(){
+
+    const password =
+        document
+        .getElementById("newPassword")
+        .value;
+
+    const confirm =
+        document
+        .getElementById("confirmPassword")
+        .value;
+
+    const message =
+        document
+        .getElementById("resetMessage");
+
+    message.style.color="#ff9b9b";
+
+    if(!password || !confirm){
+
+        message.textContent =
+            "Please fill both password fields.";
+
+        return;
+    }
+
+    if(password.length < 6){
+
+        message.textContent =
+            "Password must be at least 6 characters.";
+
+        return;
+    }
+
+    if(password !== confirm){
+
+        message.textContent =
+            "Passwords do not match.";
+
+        return;
+    }
+
+    message.style.color="#a8adbd";
+
+    message.textContent =
+        "Updating password...";
+
+
+    const {error} =
+        await supabaseClient.auth
+        .updateUser({
+
+            password:password
+
+        });
+
+
+    if(error){
+
+        message.style.color="#ff9b9b";
+
+        message.textContent =
+            error.message;
+
+        return;
+    }
+
+
+    message.style.color="#8affb0";
+
+    message.textContent =
+        "Password updated successfully!";
+
+    setTimeout(()=>{
+
+        document
+            .getElementById("resetModal")
+            .classList.remove("active");
+
+        openLogin();
+
+    },1200);
+
+}
+
+
+/* =================================================
+   LOGIN BUTTON STATE
+================================================= */
+
+async function updateLoginButton(){
+
+    const button =
+        document
+        .getElementById("loginHeaderBtn");
+
+    const {data} =
+        await supabaseClient.auth.getSession();
+
+    if(data.session){
+
+        button.textContent =
+            "Account";
+
+    }else{
+
+        button.textContent =
+            "Login";
+
+    }
+
+}
+
+
+/* =================================================
+   LOGOUT
+================================================= */
+
+async function logoutUser(){
+
+    const message =
+        document
+        .getElementById("settingsMessage");
+
+    message.style.color="#a8adbd";
+
+    message.textContent =
+        "Logging out...";
+
+    const {error} =
+        await supabaseClient.auth.signOut();
+
+    if(error){
+
+        message.style.color="#ff9b9b";
+
+        message.textContent =
+            error.message;
+
+        return;
+    }
+
+    message.style.color="#8affb0";
+
+    message.textContent =
+        "Logged out successfully.";
+
+    updateLoginButton();
+
+    setTimeout(()=>{
+
+        closeSettings();
+
+    },700);
+
+}
+
+
+/* =================================================
+   SETTINGS
+================================================= */
+
+function openSettings(){
+
+    document
+        .getElementById("settingsModal")
+        .classList.add("active");
+
+}
+
+
+function closeSettings(){
+
+    document
+        .getElementById("settingsModal")
+        .classList.remove("active");
+
+}
+
+
+/* =================================================
+   THEME
+================================================= */
+
+function applyTheme(){
+
+    const theme =
+        localStorage.getItem(
+            "wallora-theme"
+        ) || "dark";
+
+
+    if(theme === "light"){
+
+        document.documentElement
+        .style.setProperty(
+            "--bg",
+            "#f5f5f7"
+        );
+
+        document.documentElement
+        .style.setProperty(
+            "--card",
+            "#ffffff"
+        );
+
+        document.documentElement
+        .style.setProperty(
+            "--text",
+            "#111"
+        );
+
+        document.documentElement
+        .style.setProperty(
+            "--muted",
+            "#666"
+        );
+
+    }else{
+
+        document.documentElement
+        .style.setProperty(
+            "--bg",
+            "#07080d"
+        );
+
+        document.documentElement
+        .style.setProperty(
+            "--card",
+            "#11131b"
+        );
+
+        document.documentElement
+        .style.setProperty(
+            "--text",
+            "#fff"
+        );
+
+        document.documentElement
+        .style.setProperty(
+            "--muted",
+            "#a8adbd"
+        );
+
+    }
+
+}
+
+
+function toggleTheme(){
+
+    const current =
+        localStorage.getItem(
+            "wallora-theme"
+        ) || "dark";
+
+
+    const next =
+        current === "dark"
+        ? "light"
+        : "dark";
+
+
+    localStorage.setItem(
+        "wallora-theme",
+        next
+    );
+
+
+    applyTheme();
+
+}
+
+
+/* =================================================
+   INITIALIZE
+================================================= */
+
+applyTheme();
+
+updateLoginButton();
+
+
+/* =================================================
+   ESC KEY CLOSE MODALS
+================================================= */
+
+document.addEventListener(
+    "keydown",
+    function(e){
+
+        if(e.key === "Escape"){
+
+            closeLogin();
+            closeForgotPassword();
+            closeSettings();
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>
