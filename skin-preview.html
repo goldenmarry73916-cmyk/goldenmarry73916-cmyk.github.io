@@ -1,0 +1,1820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Wallora • 3D Skin Preview</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:
+        radial-gradient(circle at top,#241044 0%,#0b0714 45%,#05040a 100%);
+    color:white;
+    min-height:100vh;
+    overflow-x:hidden;
+}
+
+header{
+    height:72px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 7%;
+    border-bottom:1px solid rgba(255,255,255,.08);
+    background:rgba(5,4,10,.7);
+    backdrop-filter:blur(20px);
+    position:sticky;
+    top:0;
+    z-index:20;
+}
+
+.logo{
+    font-size:26px;
+    font-weight:800;
+    letter-spacing:-1px;
+}
+
+.logo span{
+    color:#a66cff;
+}
+
+.back{
+    color:#fff;
+    text-decoration:none;
+    padding:10px 18px;
+    border:1px solid rgba(255,255,255,.15);
+    border-radius:12px;
+    background:rgba(255,255,255,.05);
+}
+
+.container{
+    width:min(1200px,92%);
+    margin:auto;
+    padding:45px 0 70px;
+}
+
+.title{
+    text-align:center;
+    margin-bottom:35px;
+}
+
+.title h1{
+    font-size:clamp(32px,6vw,60px);
+    margin-bottom:10px;
+}
+
+.title h1 span{
+    color:#a66cff;
+}
+
+.title p{
+    color:#aaa4b8;
+    font-size:16px;
+}
+
+.steps{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+    margin-bottom:30px;
+}
+
+.step{
+    background:linear-gradient(
+        145deg,
+        rgba(255,255,255,.075),
+        rgba(255,255,255,.025)
+    );
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:20px;
+    padding:19px;
+    box-shadow:0 15px 45px rgba(0,0,0,.18);
+}
+
+.step small{
+    color:#a66cff;
+    font-weight:700;
+    letter-spacing:1px;
+}
+
+.step h3{
+    margin-top:7px;
+    font-size:17px;
+}
+
+select{
+    width:100%;
+    margin-top:10px;
+    padding:14px;
+    border-radius:13px;
+    border:1px solid rgba(255,255,255,.12);
+    background:#120c1d;
+    color:white;
+    outline:none;
+    cursor:pointer;
+}
+
+select:disabled{
+    opacity:.5;
+    cursor:not-allowed;
+}
+
+.main{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:30px;
+}
+
+.panel{
+    background:rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.09);
+    border-radius:25px;
+    padding:25px;
+    box-shadow:0 20px 60px rgba(0,0,0,.25);
+}
+
+.panel h2{
+    margin-bottom:18px;
+}
+
+.viewer{
+    min-height:570px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    position:relative;
+    perspective:1200px;
+    cursor:grab;
+    touch-action:none;
+}
+
+.viewer:active{
+    cursor:grabbing;
+}
+
+.viewer::after{
+    content:"";
+    position:absolute;
+    width:230px;
+    height:45px;
+    bottom:55px;
+    border-radius:50%;
+    background:rgba(0,0,0,.5);
+    filter:blur(18px);
+    pointer-events:none;
+}
+
+.phone{
+    width:210px;
+    height:430px;
+    position:relative;
+    transform-style:preserve-3d;
+    transition:transform .12s linear;
+    z-index:2;
+}
+
+.phone-body{
+    position:absolute;
+    inset:0;
+    border-radius:34px;
+    background:linear-gradient(145deg,#292929,#080808);
+    border:5px solid #343434;
+    box-shadow:
+        0 30px 70px rgba(0,0,0,.7),
+        inset 0 0 20px rgba(255,255,255,.08);
+    overflow:hidden;
+    transform-style:preserve-3d;
+}
+
+.front{
+    position:absolute;
+    inset:0;
+    border-radius:28px;
+    background:#090909;
+    transform:translateZ(8px);
+    overflow:hidden;
+}
+
+.front .screen{
+    position:absolute;
+    inset:7px;
+    border-radius:24px;
+    background:
+        radial-gradient(circle at 70% 25%,rgba(166,108,255,.65),transparent 28%),
+        linear-gradient(145deg,#130c24,#06060a 65%);
+    overflow:hidden;
+}
+
+.camera-hole{
+    width:14px;
+    height:14px;
+    background:#000;
+    border:2px solid #292929;
+    border-radius:50%;
+    position:absolute;
+    top:12px;
+    left:50%;
+    transform:translateX(-50%);
+}
+
+.backside{
+    position:absolute;
+    inset:0;
+    border-radius:28px;
+    background:
+        radial-gradient(circle at 25% 20%,rgba(255,255,255,.12),transparent 25%),
+        linear-gradient(145deg,#292929,#0b0b0b);
+    transform:rotateY(180deg) translateZ(8px);
+    overflow:hidden;
+}
+
+.back-texture{
+    position:absolute;
+    inset:0;
+    opacity:.35;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.12),
+            transparent 25%,
+            transparent 70%,
+            rgba(255,255,255,.06)
+        );
+    pointer-events:none;
+}
+
+.camera-module{
+    width:62px;
+    height:92px;
+    position:absolute;
+    top:25px;
+    left:22px;
+    border-radius:20px;
+    background:#111;
+    padding:9px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:6px;
+    z-index:5;
+    box-shadow:0 8px 20px rgba(0,0,0,.45);
+}
+
+.lens{
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    background:
+        radial-gradient(
+            circle,
+            #050505 25%,
+            #555 28%,
+            #111 55%,
+            #000 70%
+        );
+    border:2px solid #555;
+}
+
+.flash{
+    width:13px;
+    height:13px;
+    border-radius:50%;
+    background:#d8c67a;
+    box-shadow:0 0 12px rgba(255,225,130,.45);
+    align-self:center;
+    justify-self:center;
+}
+
+.camera-label{
+    position:absolute;
+    bottom:8px;
+    left:8px;
+    right:8px;
+    text-align:center;
+    font-size:7px;
+    color:#777;
+    letter-spacing:1px;
+}
+
+.skin{
+    position:absolute;
+    inset:0;
+    border-radius:28px;
+    pointer-events:none;
+    opacity:.82;
+    mix-blend-mode:screen;
+    z-index:3;
+}
+
+.skin-image{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:28px;
+    opacity:.88;
+    z-index:2;
+    display:none;
+}
+
+.camera-cut{
+    position:absolute;
+    top:18px;
+    left:15px;
+    width:76px;
+    height:110px;
+    border-radius:24px;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(0,0,0,.85),
+            rgba(30,30,30,.96)
+        );
+    z-index:4;
+    display:none;
+    pointer-events:none;
+    box-shadow:
+        0 0 0 2px rgba(255,255,255,.05),
+        0 12px 25px rgba(0,0,0,.35);
+}
+
+.camera-cut::before{
+    content:"";
+    position:absolute;
+    inset:5px;
+    border-radius:20px;
+    border:1px solid rgba(255,255,255,.12);
+}
+
+.side{
+    position:absolute;
+    width:16px;
+    height:400px;
+    top:15px;
+    left:97px;
+    background:#151515;
+    transform:rotateY(90deg) translateZ(105px);
+    border-radius:8px;
+}
+
+.controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-top:20px;
+    justify-content:center;
+}
+
+button{
+    border:none;
+    color:white;
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.12);
+    padding:11px 17px;
+    border-radius:12px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+button:hover{
+    background:rgba(166,108,255,.22);
+    transform:translateY(-2px);
+}
+
+.primary{
+    background:linear-gradient(135deg,#9b5cff,#6d36c9);
+    border:none;
+}
+
+.gallery-title{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.gallery-title span{
+    color:#aaa4b8;
+    font-size:12px;
+}
+
+.upload-box{
+    border:1px dashed rgba(166,108,255,.45);
+    border-radius:16px;
+    padding:15px;
+    text-align:center;
+    margin-bottom:16px;
+    background:rgba(166,108,255,.05);
+}
+
+.upload-box input{
+    width:100%;
+    margin-top:10px;
+}
+
+.skins{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+}
+
+.skin-card{
+    height:125px;
+    border-radius:18px;
+    border:2px solid transparent;
+    cursor:pointer;
+    overflow:hidden;
+    position:relative;
+    transition:.2s;
+}
+
+.skin-card:hover{
+    transform:translateY(-3px);
+}
+
+.skin-card.active{
+    border-color:#a66cff;
+    box-shadow:0 0 25px rgba(166,108,255,.25);
+}
+
+.skin-name{
+    position:absolute;
+    bottom:0;
+    left:0;
+    right:0;
+    padding:10px;
+    background:linear-gradient(transparent,rgba(0,0,0,.9));
+    font-size:13px;
+}
+
+.skin1{
+    background:
+        radial-gradient(circle at 30% 30%,#ff77c8,transparent 25%),
+        linear-gradient(135deg,#32125f,#050509);
+}
+
+.skin2{
+    background:
+        repeating-linear-gradient(45deg,#111 0 8px,#333 8px 16px);
+}
+
+.skin3{
+    background:
+        radial-gradient(circle at 70% 25%,#00e5ff,transparent 22%),
+        linear-gradient(135deg,#031d2c,#071014);
+}
+
+.skin4{
+    background:
+        radial-gradient(circle at 25% 70%,#ffb52e,transparent 20%),
+        linear-gradient(135deg,#35120a,#080604);
+}
+
+.info{
+    margin-top:22px;
+    padding:15px;
+    border-radius:15px;
+    background:rgba(166,108,255,.08);
+    color:#bbb4c8;
+    line-height:1.6;
+    font-size:14px;
+}
+
+.status{
+    margin-top:15px;
+    padding:12px;
+    border-radius:12px;
+    background:rgba(255,255,255,.04);
+    color:#aaa4b8;
+    font-size:13px;
+    text-align:center;
+}
+
+@media(max-width:800px){
+
+    .steps{
+        grid-template-columns:1fr;
+    }
+
+    .main{
+        grid-template-columns:1fr;
+    }
+
+    .viewer{
+        min-height:500px;
+    }
+
+    header{
+        padding:0 4%;
+    }
+
+    .container{
+        padding-top:30px;
+    }
+
+    .phone{
+        transform:scale(.9);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">Wal<span>lora</span></div>
+    <a href="index.html" class="back">← Back</a>
+</header>
+
+<div class="container">
+
+    <div class="title">
+        <h1>3D <span>Skin Preview</span></h1>
+        <p>Select your phone, choose a Wallora skin and preview it interactively.</p>
+    </div>
+
+    <div class="steps">
+
+        <div class="step">
+            <small>STEP 01</small>
+            <h3>Choose Brand</h3>
+
+            <select id="brand">
+                <option value="">Select Brand</option>
+
+                <option value="samsung">Samsung</option>
+                <option value="motorola">Motorola / Moto</option>
+                <option value="poco">POCO</option>
+                <option value="redmi">Redmi</option>
+                <option value="oppo">OPPO</option>
+                <option value="vivo">Vivo</option>
+                <option value="realme">Realme</option>
+
+                <option value="apple">Apple</option>
+                <option value="oneplus">OnePlus</option>
+                <option value="xiaomi">Xiaomi</option>
+                <option value="google">Google Pixel</option>
+            </select>
+        </div>
+
+        <div class="step">
+            <small>STEP 02</small>
+            <h3>Choose Series</h3>
+
+            <select id="series" disabled>
+                <option value="">Select Series</option>
+            </select>
+        </div>
+
+        <div class="step">
+            <small>STEP 03</small>
+            <h3>Choose Model</h3>
+
+            <select id="model" disabled>
+                <option value="">Select Model</option>
+            </select>
+        </div>
+
+    </div>
+
+    <div class="main">
+
+        <div class="panel">
+
+            <h2 id="phoneTitle">Choose your phone</h2>
+
+            <div class="viewer" id="viewer">
+
+                <div class="phone" id="phone">
+
+                    <div class="phone-body">
+
+                        <div class="front">
+                            <div class="screen">
+                                <div class="camera-hole"></div>
+                            </div>
+                        </div>
+
+                        <div class="backside">
+
+                            <div class="back-texture"></div>
+
+                            <img
+                                id="skinImage"
+                                class="skin-image"
+                                alt="Wallora Skin"
+                            >
+
+                            <div id="cameraCut" class="camera-cut"></div>
+
+                            <div class="camera-module" id="cameraModule">
+
+                                <div class="lens"></div>
+                                <div class="lens"></div>
+                                <div class="lens"></div>
+                                <div class="lens"></div>
+
+                                <div class="camera-label">
+                                    CAMERA
+                                </div>
+
+                            </div>
+
+                            <div
+                                class="skin"
+                                id="skinOverlay">
+                            </div>
+
+                        </div>
+
+                        <div class="side"></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="controls">
+
+                <button onclick="frontView()">
+                    Front
+                </button>
+
+                <button onclick="backView()">
+                    Back
+                </button>
+
+                <button onclick="sideView()">
+                    Side
+                </button>
+
+                <button onclick="resetView()">
+                    Reset
+                </button>
+
+                <button onclick="zoomIn()">
+                    ＋ Zoom
+                </button>
+
+                <button onclick="zoomOut()">
+                    − Zoom
+                </button>
+
+            </div>
+
+            <div class="status" id="status">
+                Select a phone model to begin.
+            </div>
+
+        </div>
+
+
+        <div class="panel">
+
+            <div class="gallery-title">
+                <h2>Wallora Skin Gallery</h2>
+                <span>SELECT • APPLY</span>
+            </div>
+
+            <div class="upload-box">
+
+                <b>🖼️ Choose your own wallpaper</b>
+
+                <input
+                    type="file"
+                    id="wallpaperInput"
+                    accept="image/*"
+                >
+
+            </div>
+
+            <div class="skins">
+
+                <div
+                    class="skin-card skin1 active"
+                    onclick="selectSkin(this,'skin1')">
+
+                    <div class="skin-name">
+                        Purple Glow
+                    </div>
+
+                </div>
+
+                <div
+                    class="skin-card skin2"
+                    onclick="selectSkin(this,'skin2')">
+
+                    <div class="skin-name">
+                        Carbon Black
+                    </div>
+
+                </div>
+
+                <div
+                    class="skin-card skin3"
+                    onclick="selectSkin(this,'skin3')">
+
+                    <div class="skin-name">
+                        Neon Blue
+                    </div>
+
+                </div>
+
+                <div
+                    class="skin-card skin4"
+                    onclick="selectSkin(this,'skin4')">
+
+                    <div class="skin-name">
+                        Midnight Gold
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="info">
+
+                <b>✨ Interactive Skin Preview</b>
+                <br><br>
+
+                1. Brand select karo.
+                <br>
+                2. Series select karo.
+                <br>
+                3. Model select karo.
+                <br>
+                4. Gallery se skin choose karo.
+                <br>
+                5. Apna wallpaper upload bhi kar sakte ho.
+                <br>
+                6. Phone ko drag karke rotate karo.
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   WALLORA PHONE DATABASE
+========================================================= */
+
+const phoneData = {
+
+    samsung:{
+
+        "Galaxy S Series":[
+            "Galaxy S26",
+            "Galaxy S26+",
+            "Galaxy S26 Ultra",
+            "Galaxy S25",
+            "Galaxy S25+",
+            "Galaxy S25 Ultra",
+            "Galaxy S24",
+            "Galaxy S24+",
+            "Galaxy S24 Ultra",
+            "Galaxy S23",
+            "Galaxy S23+",
+            "Galaxy S23 Ultra",
+            "Galaxy S22",
+            "Galaxy S22+",
+            "Galaxy S22 Ultra",
+            "Galaxy S21",
+            "Galaxy S21 Ultra",
+            "Galaxy S20",
+            "Galaxy S20 Ultra",
+            "Galaxy S10",
+            "Galaxy S9",
+            "Galaxy S8"
+        ],
+
+        "Galaxy A Series":[
+            "Galaxy A57 5G",
+            "Galaxy A55",
+            "Galaxy A37 5G",
+            "Galaxy A35",
+            "Galaxy A26 5G",
+            "Galaxy A17 5G",
+            "Galaxy A16 5G",
+            "Galaxy A15",
+            "Galaxy A05",
+            "Galaxy A51",
+            "Galaxy A71",
+            "Galaxy A50"
+        ],
+
+        "Galaxy M Series":[
+            "Galaxy M56 5G",
+            "Galaxy M55",
+            "Galaxy M36 5G",
+            "Galaxy M35",
+            "Galaxy M16 5G",
+            "Galaxy M31",
+            "Galaxy M51"
+        ],
+
+        "Galaxy F Series":[
+            "Galaxy F56 5G",
+            "Galaxy F55",
+            "Galaxy F36 5G",
+            "Galaxy F16",
+            "Galaxy F62",
+            "Galaxy F15"
+        ],
+
+        "Galaxy Z Fold":[
+            "Galaxy Z Fold7",
+            "Galaxy Z Fold6",
+            "Galaxy Z Fold5",
+            "Galaxy Z Fold4"
+        ],
+
+        "Galaxy Z Flip":[
+            "Galaxy Z Flip7",
+            "Galaxy Z Flip6",
+            "Galaxy Z Flip5",
+            "Galaxy Z Flip4"
+        ],
+
+        "Galaxy Note":[
+            "Galaxy Note20",
+            "Galaxy Note20 Ultra",
+            "Galaxy Note10",
+            "Galaxy Note10+",
+            "Galaxy Note9",
+            "Galaxy Note8",
+            "Galaxy Note5",
+            "Galaxy Note4"
+        ],
+
+        "Galaxy J & On":[
+            "Galaxy J7",
+            "Galaxy J6",
+            "Galaxy J5",
+            "Galaxy J2",
+            "Galaxy On7",
+            "Galaxy On6"
+        ]
+    },
+
+
+    motorola:{
+
+        "Razr Series":[
+            "Razr 60 Ultra",
+            "Razr 60",
+            "Razr 50 Ultra",
+            "Razr 50",
+            "Razr 40 Ultra",
+            "Razr 40"
+        ],
+
+        "Edge Series":[
+            "Edge 60 Ultra",
+            "Edge 60 Pro",
+            "Edge 60 Fusion",
+            "Edge 50 Ultra",
+            "Edge 50 Pro",
+            "Edge 50 Fusion",
+            "Edge 40",
+            "Edge 40 Neo",
+            "Edge 30 Ultra",
+            "Edge 30 Pro",
+            "Edge 20 Pro"
+        ],
+
+        "Moto G Series":[
+            "Moto G85",
+            "Moto G64",
+            "Moto G54",
+            "Moto G34",
+            "Moto G24",
+            "Moto G04",
+            "Moto G14",
+            "Moto G9",
+            "Moto G8",
+            "Moto G7",
+            "Moto G6",
+            "Moto G5",
+            "Moto G4"
+        ],
+
+        "Moto E Series":[
+            "Moto E13",
+            "Moto E22s",
+            "Moto E32",
+            "Moto E40",
+            "Moto E7 Power"
+        ],
+
+        "Moto Z Series":[
+            "Moto Z4",
+            "Moto Z3",
+            "Moto Z2 Play",
+            "Moto Z"
+        ],
+
+        "Moto X Series":[
+            "Moto X4",
+            "Moto X Style",
+            "Moto X Force",
+            "Moto X"
+        ],
+
+        "ThinkPhone":[
+            "ThinkPhone"
+        ]
+    },
+
+
+    poco:{
+
+        "POCO F Series":[
+            "POCO F6 Pro",
+            "POCO F6",
+            "POCO F5",
+            "POCO F4",
+            "POCO F3",
+            "POCO F1"
+        ],
+
+        "POCO X Series":[
+            "POCO X6 Pro",
+            "POCO X6",
+            "POCO X5 Pro",
+            "POCO X4 Pro",
+            "POCO X3",
+            "POCO X2"
+        ],
+
+        "POCO M Series":[
+            "POCO M6 Pro",
+            "POCO M6",
+            "POCO M5",
+            "POCO M4 Pro",
+            "POCO M3",
+            "POCO M2"
+        ],
+
+        "POCO C Series":[
+            "POCO C65",
+            "POCO C61",
+            "POCO C55",
+            "POCO C51",
+            "POCO C50",
+            "POCO C31"
+        ]
+    },
+
+
+    redmi:{
+
+        "Redmi Note Series":[
+            "Redmi Note 13 Pro+",
+            "Redmi Note 13 Pro",
+            "Redmi Note 13",
+            "Redmi Note 12 Pro",
+            "Redmi Note 12",
+            "Redmi Note 11",
+            "Redmi Note 10 Pro",
+            "Redmi Note 9 Pro",
+            "Redmi Note 8 Pro",
+            "Redmi Note 7 Pro"
+        ],
+
+        "Redmi Number Series":[
+            "Redmi 13",
+            "Redmi 13C",
+            "Redmi 12",
+            "Redmi 12 5G",
+            "Redmi 10",
+            "Redmi 9",
+            "Redmi 8",
+            "Redmi 7",
+            "Redmi 6",
+            "Redmi 5"
+        ],
+
+        "Redmi A Series":[
+            "Redmi A3",
+            "Redmi A2",
+            "Redmi A1"
+        ],
+
+        "Redmi K Series":[
+            "Redmi K70",
+            "Redmi K60",
+            "Redmi K50",
+            "Redmi K20 Pro"
+        ]
+    },
+
+
+    oppo:{
+
+        "Find X Series":[
+            "Find X7 Ultra",
+            "Find X7",
+            "Find X6 Pro",
+            "Find X5 Pro"
+        ],
+
+        "Find N Series":[
+            "Find N3",
+            "Find N3 Flip",
+            "Find N2",
+            "Find N2 Flip"
+        ],
+
+        "Reno Series":[
+            "Reno 12 Pro",
+            "Reno 12",
+            "Reno 11 Pro",
+            "Reno 11",
+            "Reno 10 Pro+",
+            "Reno 10",
+            "Reno 8",
+            "Reno 7",
+            "Reno 6",
+            "Reno 5",
+            "Reno 10x Zoom"
+        ],
+
+        "F Series":[
+            "F27 Pro+",
+            "F25 Pro",
+            "F23",
+            "F21s Pro",
+            "F19",
+            "F17"
+        ],
+
+        "A Series":[
+            "A3 Pro",
+            "A79",
+            "A59",
+            "A38",
+            "A18",
+            "A58",
+            "A78"
+        ],
+
+        "K Series":[
+            "K12x",
+            "K11",
+            "K10 5G",
+            "K9"
+        ]
+    },
+
+
+    vivo:{
+
+        "X Series":[
+            "X100 Pro",
+            "X100",
+            "X90 Pro",
+            "X80",
+            "X70 Pro"
+        ],
+
+        "X Fold Series":[
+            "X Fold 3 Pro",
+            "X Fold 2",
+            "X Fold"
+        ],
+
+        "V Series":[
+            "V40 Pro",
+            "V40",
+            "V30 Pro",
+            "V29",
+            "V27",
+            "V25"
+        ],
+
+        "T Series":[
+            "T3 Pro",
+            "T3x",
+            "T3",
+            "T2 Pro",
+            "T2",
+            "T1"
+        ],
+
+        "Y Series":[
+            "Y200",
+            "Y58",
+            "Y28",
+            "Y18",
+            "Y17s"
+        ],
+
+        "NEX Series":[
+            "NEX 3",
+            "NEX Dual Display",
+            "NEX"
+        ]
+    },
+
+
+    realme:{
+
+        "GT Series":[
+            "GT 6",
+            "GT 6T",
+            "GT 2 Pro",
+            "GT Neo 3",
+            "GT Master Edition"
+        ],
+
+        "Number Series Pro":[
+            "Realme 13 Pro+",
+            "Realme 12 Pro+",
+            "Realme 11 Pro+",
+            "Realme 10 Pro+"
+        ],
+
+        "Number Series Standard":[
+            "Realme 13 5G",
+            "Realme 12 5G",
+            "Realme 11",
+            "Realme 10"
+        ],
+
+        "Narzo Series":[
+            "Narzo 70 Pro",
+            "Narzo 70 Turbo",
+            "Narzo 60",
+            "Narzo 50"
+        ],
+
+        "P Series":[
+            "Realme P1 Pro",
+            "Realme P1 5G",
+            "Realme P2 Pro"
+        ],
+
+        "C Series":[
+            "Realme C67",
+            "Realme C65",
+            "Realme C55",
+            "Realme C53",
+            "Realme C35"
+        ]
+    },
+
+
+    apple:{
+
+        "iPhone":[
+            "iPhone 17",
+            "iPhone 17 Pro",
+            "iPhone 17 Pro Max",
+            "iPhone 16",
+            "iPhone 16 Pro",
+            "iPhone 16 Pro Max",
+            "iPhone 15",
+            "iPhone 15 Pro",
+            "iPhone 15 Pro Max"
+        ]
+    },
+
+
+    oneplus:{
+
+        "OnePlus":[
+            "OnePlus 13",
+            "OnePlus 13R",
+            "OnePlus 12",
+            "OnePlus 12R",
+            "OnePlus Nord 5",
+            "OnePlus Nord CE5"
+        ]
+    },
+
+
+    xiaomi:{
+
+        "Xiaomi":[
+            "Xiaomi 15",
+            "Xiaomi 15 Ultra",
+            "Xiaomi 14",
+            "Xiaomi 14 Ultra"
+        ]
+    },
+
+
+    google:{
+
+        "Pixel":[
+            "Pixel 10",
+            "Pixel 10 Pro",
+            "Pixel 10 Pro XL",
+            "Pixel 9",
+            "Pixel 9 Pro",
+            "Pixel 9 Pro XL"
+        ]
+    }
+
+};
+
+
+/* =========================================================
+   CAMERA STYLE DATABASE
+========================================================= */
+
+const cameraStyles = {
+
+    samsung:{
+        "Galaxy S Series":"floating",
+        "Galaxy A Series":"vertical",
+        "Galaxy M Series":"vertical",
+        "Galaxy F Series":"vertical",
+        "Galaxy Z Fold":"vertical",
+        "Galaxy Z Flip":"flip",
+        "Galaxy Note":"rectangle",
+        "Galaxy J & On":"center"
+    },
+
+    motorola:{
+        "Razr Series":"flip",
+        "Edge Series":"square",
+        "Moto G Series":"square",
+        "Moto E Series":"small",
+        "Moto Z Series":"puck",
+        "Moto X Series":"center",
+        "ThinkPhone":"square"
+    },
+
+    poco:{
+        "POCO F Series":"rings",
+        "POCO X Series":"visor",
+        "POCO M Series":"visor",
+        "POCO C Series":"mixed"
+    },
+
+    redmi:{
+        "Redmi Note Series":"rectangle",
+        "Redmi Number Series":"rings",
+        "Redmi A Series":"center",
+        "Redmi K Series":"visor"
+    },
+
+    oppo:{
+        "Find X Series":"dial",
+        "Find N Series":"dial",
+        "Reno Series":"pill",
+        "F Series":"dial",
+        "A Series":"dial",
+        "K Series":"rings"
+    },
+
+    vivo:{
+        "X Series":"dial",
+        "X Fold Series":"dial",
+        "V Series":"pill",
+        "T Series":"mixed",
+        "Y Series":"mixed",
+        "NEX Series":"dial"
+    },
+
+    realme:{
+        "GT Series":"visor",
+        "Number Series Pro":"dial",
+        "Number Series Standard":"mixed",
+        "Narzo Series":"dial",
+        "P Series":"dial",
+        "C Series":"square"
+    }
+
+};
+
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const brand =
+    document.getElementById("brand");
+
+const series =
+    document.getElementById("series");
+
+const model =
+    document.getElementById("model");
+
+const phone =
+    document.getElementById("phone");
+
+const skinOverlay =
+    document.getElementById("skinOverlay");
+
+const skinImage =
+    document.getElementById("skinImage");
+
+const cameraModule =
+    document.getElementById("cameraModule");
+
+const cameraCut =
+    document.getElementById("cameraCut");
+
+const status =
+    document.getElementById("status");
+
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+brand.addEventListener("change",function(){
+
+    series.innerHTML =
+        '<option value="">Select Series</option>';
+
+    model.innerHTML =
+        '<option value="">Select Model</option>';
+
+    model.disabled=true;
+
+    if(!this.value){
+
+        series.disabled=true;
+
+        return;
+    }
+
+    series.disabled=false;
+
+    Object.keys(phoneData[this.value]).forEach(item=>{
+
+        const option =
+            document.createElement("option");
+
+        option.value=item;
+        option.textContent=item;
+
+        series.appendChild(option);
+
+    });
+
+});
+
+
+/* =========================================================
+   SERIES
+========================================================= */
+
+series.addEventListener("change",function(){
+
+    model.innerHTML =
+        '<option value="">Select Model</option>';
+
+    if(!this.value){
+
+        model.disabled=true;
+
+        return;
+    }
+
+    model.disabled=false;
+
+    phoneData[brand.value][this.value]
+        .forEach(item=>{
+
+            const option =
+                document.createElement("option");
+
+            option.value=item;
+            option.textContent=item;
+
+            model.appendChild(option);
+
+        });
+
+});
+
+
+/* =========================================================
+   MODEL
+========================================================= */
+
+model.addEventListener("change",function(){
+
+    if(!this.value)
+        return;
+
+    document.getElementById("phoneTitle")
+        .textContent=this.value;
+
+    status.textContent =
+        this.value +
+        " selected • Choose a Wallora skin.";
+
+    updateCameraStyle(
+        brand.value,
+        series.value,
+        this.value
+    );
+
+});
+
+
+/* =========================================================
+   CAMERA STYLE
+========================================================= */
+
+function updateCameraStyle(
+    brandName,
+    seriesName,
+    modelName
+){
+
+    cameraModule.style.width="62px";
+    cameraModule.style.height="92px";
+    cameraModule.style.top="25px";
+    cameraModule.style.left="22px";
+    cameraModule.style.borderRadius="20px";
+
+    cameraModule.style.display="grid";
+
+    const style =
+        cameraStyles[brandName] &&
+        cameraStyles[brandName][seriesName];
+
+    if(style==="floating" || style==="rings"){
+
+        cameraModule.style.background="transparent";
+        cameraModule.style.boxShadow="none";
+        cameraModule.style.gridTemplateColumns="1fr";
+        cameraModule.style.width="58px";
+        cameraModule.style.height="112px";
+        cameraModule.style.gap="7px";
+
+    }
+
+    else if(style==="dial"){
+
+        cameraModule.style.width="94px";
+        cameraModule.style.height="94px";
+        cameraModule.style.left="58px";
+        cameraModule.style.top="28px";
+        cameraModule.style.borderRadius="50%";
+        cameraModule.style.gridTemplateColumns="1fr 1fr";
+        cameraModule.style.padding="14px";
+
+    }
+
+    else if(style==="center"){
+
+        cameraModule.style.width="66px";
+        cameraModule.style.height="82px";
+        cameraModule.style.left="72px";
+        cameraModule.style.top="27px";
+        cameraModule.style.borderRadius="50%";
+
+    }
+
+    else if(style==="puck"){
+
+        cameraModule.style.width="100px";
+        cameraModule.style.height="100px";
+        cameraModule.style.left="55px";
+        cameraModule.style.top="28px";
+        cameraModule.style.borderRadius="50%";
+        cameraModule.style.padding="17px";
+
+    }
+
+    else if(style==="visor"){
+
+        cameraModule.style.width="118px";
+        cameraModule.style.height="92px";
+        cameraModule.style.left="18px";
+        cameraModule.style.top="23px";
+        cameraModule.style.borderRadius="18px";
+        cameraModule.style.gridTemplateColumns="1fr 1fr";
+
+    }
+
+    else if(style==="pill"){
+
+        cameraModule.style.width="64px";
+        cameraModule.style.height="112px";
+        cameraModule.style.left="20px";
+        cameraModule.style.top="22px";
+        cameraModule.style.borderRadius="32px";
+
+    }
+
+    else if(style==="square"){
+
+        cameraModule.style.width="78px";
+        cameraModule.style.height="86px";
+        cameraModule.style.left="20px";
+        cameraModule.style.top="24px";
+        cameraModule.style.borderRadius="18px";
+
+    }
+
+    else if(style==="flip"){
+
+        cameraModule.style.width="80px";
+        cameraModule.style.height="48px";
+        cameraModule.style.left="65px";
+        cameraModule.style.top="25px";
+        cameraModule.style.borderRadius="24px";
+        cameraModule.style.gridTemplateColumns="1fr 1fr";
+
+    }
+
+    else if(style==="rectangle"){
+
+        cameraModule.style.width="72px";
+        cameraModule.style.height="120px";
+        cameraModule.style.left="20px";
+        cameraModule.style.top="22px";
+        cameraModule.style.borderRadius="18px";
+
+    }
+
+    else if(style==="small"){
+
+        cameraModule.style.width="58px";
+        cameraModule.style.height="75px";
+        cameraModule.style.left="22px";
+        cameraModule.style.top="25px";
+        cameraModule.style.borderRadius="15px";
+
+    }
+
+    else if(style==="mixed"){
+
+        cameraModule.style.width="76px";
+        cameraModule.style.height="86px";
+        cameraModule.style.left="20px";
+        cameraModule.style.top="24px";
+        cameraModule.style.borderRadius="18px";
+
+    }
+
+}
+
+
+/* =========================================================
+   VIEW
+========================================================= */
+
+let rotateX=-8;
+let rotateY=-25;
+let scale=1;
+
+function update(){
+
+    phone.style.transform=
+        `rotateX(${rotateX}deg)
+         rotateY(${rotateY}deg)
+         scale(${scale})`;
+
+}
+
+function frontView(){
+
+    rotateX=0;
+    rotateY=0;
+
+    update();
+}
+
+function backView(){
+
+    rotateX=0;
+    rotateY=180;
+
+    update();
+}
+
+function sideView(){
+
+    rotateX=0;
+    rotateY=90;
+
+    update();
+}
+
+function resetView(){
+
+    rotateX=-8;
+    rotateY=-25;
+    scale=1;
+
+    update();
+}
+
+function zoomIn(){
+
+    scale=Math.min(
+        1.5,
+        scale+.1
+    );
+
+    update();
+}
+
+function zoomOut(){
+
+    scale=Math.max(
+        .65,
+        scale-.1
+    );
+
+    update();
+}
+
+
+/* =========================================================
+   PRESET SKINS
+========================================================= */
+
+function selectSkin(card,type){
+
+    document
+        .querySelectorAll(".skin-card")
+        .forEach(c=>
+            c.classList.remove("active")
+        );
+
+    card.classList.add("active");
+
+    skinImage.style.display="none";
+
+    skinOverlay.className=
+        "skin "+type;
+
+    status.textContent =
+        "Wallora skin applied • "+
+        type.replace("skin","Skin ");
+
+}
+
+
+/* =========================================================
+   CUSTOM WALLPAPER
+========================================================= */
+
+document
+    .getElementById("wallpaperInput")
+    .addEventListener(
+        "change",
+        function(e){
+
+            const file =
+                e.target.files[0];
+
+            if(!file)
+                return;
+
+            if(!file.type.startsWith("image/")){
+
+                alert(
+                    "Please select an image file."
+                );
+
+                return;
+            }
+
+            const reader =
+                new FileReader();
+
+            reader.onload=function(event){
+
+                skinImage.src =
+                    event.target.result;
+
+                skinImage.style.display =
+                    "block";
+
+                skinOverlay.className =
+                    "skin";
+
+                document
+                    .querySelectorAll(".skin-card")
+                    .forEach(c=>
+                        c.classList.remove("active")
+                    );
+
+                status.textContent =
+                    "Your wallpaper is applied to the phone back.";
+
+            };
+
+            reader.readAsDataURL(file);
+
+        }
+    );
+
+
+/* =========================================================
+   DRAG ROTATION
+========================================================= */
+
+let dragging=false;
+let lastX=0;
+let lastY=0;
+
+const viewer =
+    document.getElementById("viewer");
+
+viewer.addEventListener(
+    "pointerdown",
+    e=>{
+
+        dragging=true;
+
+        lastX=e.clientX;
+        lastY=e.clientY;
+
+        viewer.setPointerCapture(
+            e.pointerId
+        );
+
+    }
+);
+
+viewer.addEventListener(
+    "pointermove",
+    e=>{
+
+        if(!dragging)
+            return;
+
+        const dx =
+            e.clientX-lastX;
+
+        const dy =
+            e.clientY-lastY;
+
+        rotateY+=dx*.55;
+        rotateX-=dy*.35;
+
+        rotateX=
+            Math.max(
+                -75,
+                Math.min(
+                    75,
+                    rotateX
+                )
+            );
+
+        lastX=e.clientX;
+        lastY=e.clientY;
+
+        update();
+
+    }
+);
+
+viewer.addEventListener(
+    "pointerup",
+    ()=>{
+
+        dragging=false;
+
+    }
+);
+
+viewer.addEventListener(
+    "pointercancel",
+    ()=>{
+
+        dragging=false;
+
+    }
+);
+
+
+/* =========================================================
+   START
+========================================================= */
+
+update();
+
+</script>
+
+</body>
+</html>
