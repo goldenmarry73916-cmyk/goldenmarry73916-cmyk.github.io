@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Wallora • 3D Skin Preview</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    min-height:100vh;
+    color:#fff;
+    background:
+        radial-gradient(circle at top,#28104b 0%,#0b0714 45%,#040308 100%);
+    overflow-x:hidden;
+}
+
+header{
+    height:72px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 7%;
+    background:rgba(5,4,10,.72);
+    border-bottom:1px solid rgba(255,255,255,.08);
+    backdrop-filter:blur(20px);
+    position:sticky;
+    top:0;
+    z-index:50;
+}
+
+.logo{
+    font-size:27px;
+    font-weight:900;
+}
+
+.logo span{
+    color:#a66cff;
+}
+
+.back{
+    text-decoration:none;
+    color:white;
+    padding:10px 17px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+}
+
+.container{
+    width:min(1250px,92%);
+    margin:auto;
+    padding:42px 0 70px;
+}
+
+.title{
+    text-align:center;
+    margin-bottom:32px;
+}
+
+.title h1{
+    font-size:clamp(34px,6vw,62px);
+}
+
+.title h1 span{
+    color:#a66cff;
+}
+
+.title p{
+    color:#aaa3b7;
+    margin-top:10px;
+}
+
+.steps{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+    margin-bottom:25px;
+}
+
+.step,
+.panel{
+    background:rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.09);
+    box-shadow:0 20px 60px rgba(0,0,0,.25);
+}
+
+.step{
+    padding:19px;
+    border-radius:19px;
+}
+
+.step small{
+    color:#a66cff;
+    font-weight:bold;
+    letter-spacing:1px;
+}
+
+.step h3{
+    margin-top:7px;
+}
+
+select{
+    width:100%;
+    margin-top:12px;
+    padding:14px;
+    color:white;
+    background:#120b1e;
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:13px;
+    outline:none;
+}
+
+select:disabled{
+    opacity:.45;
+}
+
+.main{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:25px;
+}
+
+.panel{
+    border-radius:25px;
+    padding:24px;
+}
+
+.viewer{
+    min-height:560px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    position:relative;
+    perspective:1300px;
+    overflow:hidden;
+    cursor:grab;
+    touch-action:none;
+}
+
+.viewer:active{
+    cursor:grabbing;
+}
+
+.viewer:after{
+    content:"";
+    position:absolute;
+    width:230px;
+    height:45px;
+    bottom:55px;
+    border-radius:50%;
+    background:#000;
+    opacity:.55;
+    filter:blur(18px);
+}
+
+.phone{
+    width:220px;
+    height:445px;
+    position:relative;
+    transform-style:preserve-3d;
+    z-index:3;
+}
+
+.phone-body{
+    position:absolute;
+    inset:0;
+    border-radius:36px;
+    border:5px solid #303030;
+    background:#111;
+    box-shadow:
+        0 35px 80px rgba(0,0,0,.75),
+        inset 0 0 20px rgba(255,255,255,.08);
+    transform-style:preserve-3d;
+}
+
+.front{
+    position:absolute;
+    inset:0;
+    border-radius:30px;
+    background:#050505;
+    transform:translateZ(9px);
+    overflow:hidden;
+}
+
+.screen{
+    position:absolute;
+    inset:7px;
+    border-radius:25px;
+    background:
+        radial-gradient(circle at 70% 25%,#7040b0,transparent 27%),
+        linear-gradient(145deg,#170b2c,#050509);
+}
+
+.camera-hole{
+    position:absolute;
+    width:14px;
+    height:14px;
+    top:11px;
+    left:50%;
+    transform:translateX(-50%);
+    border-radius:50%;
+    background:#000;
+    border:2px solid #292929;
+}
+
+.backside{
+    position:absolute;
+    inset:0;
+    border-radius:30px;
+    overflow:hidden;
+    transform:rotateY(180deg) translateZ(9px);
+    background:
+        linear-gradient(145deg,#303030,#0a0a0a);
+}
+
+.back-base{
+    position:absolute;
+    inset:0;
+    background:
+        radial-gradient(circle at 25% 15%,
+        rgba(255,255,255,.12),
+        transparent 25%),
+        linear-gradient(145deg,#292929,#080808);
+}
+
+.skin-image{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:none;
+    z-index:3;
+}
+
+/* ===============================
+   CAMERA CUTOUT
+=============================== */
+
+.camera-mask{
+    position:absolute;
+    z-index:10;
+    background:#111;
+    box-shadow:
+        0 7px 18px rgba(0,0,0,.55),
+        0 0 0 2px rgba(255,255,255,.05);
+    overflow:hidden;
+}
+
+/* individual camera openings */
+
+.lens{
+    width:22px;
+    height:22px;
+    border-radius:50%;
+    background:
+        radial-gradient(circle at 40% 35%,
+        #666 0 7%,
+        #080808 25%,
+        #333 45%,
+        #000 70%);
+    border:2px solid #555;
+}
+
+.flash{
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    background:#d8c77a;
+    box-shadow:0 0 10px rgba(255,220,120,.4);
+}
+
+/* ===============================
+   MODEL MASKS
+=============================== */
+
+.mask-left-vertical{
+    width:70px;
+    height:122px;
+    left:18px;
+    top:22px;
+    border-radius:20px;
+    padding:10px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:7px;
+}
+
+.mask-round{
+    width:94px;
+    height:94px;
+    left:63px;
+    top:28px;
+    border-radius:50%;
+    padding:15px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:7px;
+}
+
+.mask-square{
+    width:82px;
+    height:90px;
+    left:19px;
+    top:25px;
+    border-radius:19px;
+    padding:10px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:7px;
+}
+
+.mask-pill{
+    width:66px;
+    height:118px;
+    left:19px;
+    top:23px;
+    border-radius:34px;
+    padding:10px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:7px;
+}
+
+.mask-visor{
+    width:122px;
+    height:88px;
+    left:17px;
+    top:25px;
+    border-radius:20px;
+    padding:12px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:7px;
+}
+
+.mask-center{
+    width:70px;
+    height:85px;
+    left:75px;
+    top:26px;
+    border-radius:25px;
+    padding:11px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:7px;
+}
+
+.camera-label{
+    position:absolute;
+    bottom:6px;
+    left:0;
+    right:0;
+    text-align:center;
+    color:#777;
+    font-size:6px;
+    letter-spacing:1px;
+}
+
+.skin-glass{
+    position:absolute;
+    inset:0;
+    z-index:5;
+    pointer-events:none;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.13),
+            transparent 28%,
+            transparent 72%,
+            rgba(255,255,255,.06)
+        );
+}
+
+/* ===============================
+   GALLERY
+=============================== */
+
+.gallery-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:17px;
+}
+
+.gallery-head span{
+    color:#aaa3b7;
+    font-size:12px;
+}
+
+.gallery{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+    max-height:560px;
+    overflow-y:auto;
+    padding-right:4px;
+}
+
+.wallpaper-card{
+    height:150px;
+    position:relative;
+    border-radius:17px;
+    overflow:hidden;
+    cursor:pointer;
+    border:2px solid transparent;
+    transition:.2s;
+}
+
+.wallpaper-card:hover{
+    transform:translateY(-3px);
+}
+
+.wallpaper-card.active{
+    border-color:#a66cff;
+    box-shadow:0 0 25px rgba(166,108,255,.3);
+}
+
+.wallpaper-card img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.wallpaper-name{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    padding:10px;
+    font-size:12px;
+    background:linear-gradient(transparent,rgba(0,0,0,.9));
+}
+
+.empty{
+    grid-column:1/-1;
+    padding:30px;
+    text-align:center;
+    color:#aaa3b7;
+    border:1px dashed rgba(255,255,255,.15);
+    border-radius:15px;
+}
+
+.status{
+    margin-top:16px;
+    padding:13px;
+    border-radius:12px;
+    background:rgba(255,255,255,.04);
+    color:#aaa3b7;
+    text-align:center;
+    font-size:13px;
+}
+
+.controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:9px;
+    justify-content:center;
+    margin-top:18px;
+}
+
+button{
+    padding:11px 16px;
+    border-radius:11px;
+    color:#fff;
+    background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.12);
+    cursor:pointer;
+}
+
+button:hover{
+    background:rgba(166,108,255,.2);
+}
+
+.primary{
+    background:linear-gradient(135deg,#9d5cff,#6d36c9);
+}
+
+@media(max-width:800px){
+
+    .steps,
+    .main{
+        grid-template-columns:1fr;
+    }
+
+    .viewer{
+        min-height:500px;
+    }
+
+    header{
+        padding:0 4%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">Wal<span>lora</span></div>
+    <a class="back" href="index.html">← Back</a>
+</header>
+
+<div class="container">
+
+<div class="title">
+    <h1>3D <span>Skin Preview</span></h1>
+    <p>Select your phone and apply a wallpaper directly from Wallora.</p>
+</div>
+
+<div class="steps">
+
+<div class="step">
+<small>STEP 01</small>
+<h3>Choose Brand</h3>
+<select id="brand">
+<option value="">Select Brand</option>
+<option value="samsung">Samsung</option>
+<option value="motorola">Motorola / Moto</option>
+<option value="xiaomi">Xiaomi</option>
+<option value="redmi">Redmi</option>
+<option value="realme">Realme</option>
+<option value="vivo">Vivo</option>
+<option value="oppo">OPPO</option>
+<option value="poco">POCO</option>
+<option value="apple">Apple</option>
+<option value="oneplus">OnePlus</option>
+<option value="google">Google Pixel</option>
+</select>
+</div>
+
+<div class="step">
+<small>STEP 02</small>
+<h3>Choose Series</h3>
+<select id="series" disabled>
+<option value="">Select Series</option>
+</select>
+</div>
+
+<div class="step">
+<small>STEP 03</small>
+<h3>Choose Model</h3>
+<select id="model" disabled>
+<option value="">Select Model</option>
+</select>
+</div>
+
+</div>
+
+<div class="main">
+
+<div class="panel">
+
+<h2 id="phoneTitle">Choose your phone</h2>
+
+<div class="viewer" id="viewer">
+
+<div class="phone" id="phone">
+
+<div class="phone-body">
+
+<div class="front">
+<div class="screen">
+<div class="camera-hole"></div>
+</div>
+</div>
+
+<div class="backside">
+
+<div class="back-base"></div>
+
+<img
+id="skinImage"
+class="skin-image"
+alt="Wallora Wallpaper">
+
+<div
+id="cameraMask"
+class="camera-mask mask-left-vertical">
+</div>
+
+<div class="skin-glass"></div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="controls">
+
+<button onclick="frontView()">Front</button>
+<button onclick="backView()">Back</button>
+<button onclick="sideView()">Side</button>
+<button onclick="resetView()">Reset</button>
+<button onclick="zoomIn()">＋ Zoom</button>
+<button onclick="zoomOut()">− Zoom</button>
+
+</div>
+
+<div class="status" id="status">
+Choose a phone model.
+</div>
+
+</div>
+
+
+<div class="panel">
+
+<div class="gallery-head">
+<h2>Wallora Gallery</h2>
+<span>SELECT • APPLY</span>
+</div>
+
+<div class="gallery" id="gallery">
+
+<div class="empty">
+Loading Wallora wallpapers...
+</div>
+
+</div>
+
+<div class="status">
+Only wallpapers available inside Wallora can be selected.
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   PHONE DATABASE
+========================================================= */
+
+const phoneData={
+
+samsung:{
+"S Series":[
+"S26","S26+","S26 Ultra",
+"S25","S25+","S25 Ultra",
+"S24","S24+","S24 Ultra",
+"S23","S23+","S23 Ultra",
+"S22","S22+","S22 Ultra",
+"S21","S21 Ultra",
+"S20","S20 Ultra"
+],
+"A Series":[
+"A57 5G","A55","A37 5G","A35","A26 5G",
+"A17 5G","A16 5G","A15","A05",
+"A51","A71","A50"
+],
+"M Series":[
+"M56 5G","M55","M36 5G","M35","M16 5G","M31","M51"
+],
+"F Series":[
+"F56 5G","F55","F36 5G","F16","F62","F15"
+],
+"Z Fold":[
+"Z Fold7","Z Fold6","Z Fold5","Z Fold4"
+],
+"Z Flip":[
+"Z Flip7","Z Flip6","Z Flip5","Z Flip4"
+]
+},
+
+motorola:{
+"Razr":[
+"Razr 60 Ultra","Razr 60","Razr 50 Ultra","Razr 50",
+"Razr 40 Ultra","Razr 40"
+],
+"Edge":[
+"Edge 60 Ultra","Edge 60 Pro","Edge 60 Fusion",
+"Edge 50 Ultra","Edge 50 Pro","Edge 50 Fusion",
+"Edge 40","Edge 40 Neo","Edge 30 Ultra","Edge 30 Pro"
+],
+"Moto G":[
+"Moto G85","Moto G64","Moto G54","Moto G45",
+"Moto G34","Moto G24","Moto G14","Moto G04"
+],
+"Moto E":[
+"Moto E13","Moto E22s","Moto E32","Moto E40","Moto E7 Power"
+]
+},
+
+xiaomi:{
+"Number Series":[
+"Xiaomi 15","Xiaomi 15 Ultra",
+"Xiaomi 14","Xiaomi 14 Ultra",
+"Xiaomi 13","Xiaomi 13 Pro"
+]
+},
+
+redmi:{
+"Note Series":[
+"Redmi Note 14 Pro+","Redmi Note 14 Pro","Redmi Note 14",
+"Redmi Note 13 Pro+","Redmi Note 13 Pro","Redmi Note 13",
+"Redmi Note 12 Pro","Redmi Note 12",
+"Redmi Note 11","Redmi Note 10 Pro",
+"Redmi Note 9 Pro","Redmi Note 8 Pro"
+],
+"Number Series":[
+"Redmi 14","Redmi 13","Redmi 13C",
+"Redmi 12","Redmi 12 5G",
+"Redmi 10","Redmi 9"
+],
+"K Series":[
+"Redmi K80","Redmi K70","Redmi K60",
+"Redmi K50","Redmi K20 Pro"
+]
+},
+
+realme:{
+"GT Series":[
+"GT 7 Pro","GT 6","GT 6T",
+"GT 2 Pro","GT Neo 5","GT Neo 3"
+],
+"Number Series":[
+"Realme 14 Pro+","Realme 14 Pro",
+"Realme 13 Pro+","Realme 13 Pro",
+"Realme 12 Pro+","Realme 12 Pro"
+],
+"Narzo":[
+"Narzo 70 Pro","Narzo 70 Turbo",
+"Narzo 60","Narzo 50"
+],
+"P Series":[
+"Realme P2 Pro","Realme P1 Pro","Realme P1 5G"
+],
+"C Series":[
+"Realme C67","Realme C65","Realme C55",
+"Realme C53","Realme C35"
+]
+},
+
+vivo:{
+"X Series":[
+"X200","X200 Pro","X100","X100 Pro",
+"X90 Pro","X80"
+],
+"X Fold":[
+"X Fold 3 Pro","X Fold 2"
+],
+"V Series":[
+"V50","V40","V40 Pro","V30","V30 Pro",
+"V29","V27","V25"
+],
+"T Series":[
+"T3 Ultra","T3 Pro","T3x","T3",
+"T2 Pro","T2","T1"
+],
+"Y Series":[
+"Y300","Y300 Pro","Y200","Y200e",
+"Y58","Y28","Y18"
+]
+},
+
+oppo:{
+"Find X":[
+"Find X8 Pro","Find X8","Find X7 Ultra",
+"Find X7","Find X6 Pro","Find X5 Pro"
+],
+"Find N":[
+"Find N3","Find N3 Flip","Find N2","Find N2 Flip"
+],
+"Reno":[
+"Reno 13 Pro+","Reno 13 Pro","Reno 13",
+"Reno 12 Pro","Reno 12","Reno 11 Pro",
+"Reno 11","Reno 10 Pro+","Reno 10"
+],
+"F Series":[
+"F27 Pro+","F25 Pro","F23","F21 Pro","F19"
+],
+"A Series":[
+"A3 Pro","A79","A59","A38","A18","A58","A78"
+]
+},
+
+poco:{
+"F Series":[
+"POCO F7","POCO F6 Pro","POCO F6",
+"POCO F5","POCO F4","POCO F3","POCO F1"
+],
+"X Series":[
+"POCO X7","POCO X6 Pro","POCO X6",
+"POCO X5 Pro","POCO X4 Pro","POCO X3 Pro"
+],
+"M Series":[
+"POCO M7 5G","POCO M6 Plus","POCO M6 Pro",
+"POCO M6 5G","POCO M5","POCO M4 Pro","POCO M3"
+],
+"C Series":[
+"POCO C75","POCO C65","POCO C61",
+"POCO C55","POCO C51"
+]
+},
+
+apple:{
+"iPhone":[
+"iPhone 17 Pro Max","iPhone 17 Pro","iPhone 17",
+"iPhone 16 Pro Max","iPhone 16 Pro","iPhone 16",
+"iPhone 15 Pro Max","iPhone 15 Pro","iPhone 15"
+]
+},
+
+oneplus:{
+"OnePlus":[
+"OnePlus 13","OnePlus 13R",
+"OnePlus 12","OnePlus 12R",
+"OnePlus Nord 5","OnePlus Nord CE5"
+]
+},
+
+google:{
+"Pixel":[
+"Pixel 10 Pro XL","Pixel 10 Pro","Pixel 10",
+"Pixel 9 Pro XL","Pixel 9 Pro","Pixel 9"
+]
+}
+
+};
+
+
+/* =========================================================
+   WALLORA GALLERY
+========================================================= */
+
+/*
+   IMPORTANT:
+   Your index.html can provide the real gallery here.
+
+   Expected format:
+
+   window.WALLORA_GALLERY = [
+      {
+        name:"Wallpaper Name",
+        url:"https://....jpg"
+      }
+   ];
+
+   If it is not available, the page checks localStorage
+   for "wallora-wallpapers".
+*/
+
+let WALLORA_GALLERY =
+    window.WALLORA_GALLERY || [];
+
+try{
+
+    const saved =
+        localStorage.getItem("wallora-wallpapers");
+
+    if(!WALLORA_GALLERY.length && saved){
+
+        const parsed=JSON.parse(saved);
+
+        if(Array.isArray(parsed))
+            WALLORA_GALLERY=parsed;
+    }
+
+}catch(e){
+
+    console.log("Wallora gallery not found.");
+
+}
+
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const brand=
+document.getElementById("brand");
+
+const series=
+document.getElementById("series");
+
+const model=
+document.getElementById("model");
+
+const gallery=
+document.getElementById("gallery");
+
+const phone=
+document.getElementById("phone");
+
+const cameraMask=
+document.getElementById("cameraMask");
+
+const skinImage=
+document.getElementById("skinImage");
+
+const status=
+document.getElementById("status");
+
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+brand.addEventListener("change",()=>{
+
+    series.innerHTML=
+        `<option value="">Select Series</option>`;
+
+    model.innerHTML=
+        `<option value="">Select Model</option>`;
+
+    model.disabled=true;
+
+    if(!brand.value){
+
+        series.disabled=true;
+        return;
+    }
+
+    series.disabled=false;
+
+    Object.keys(phoneData[brand.value])
+    .forEach(name=>{
+
+        const option=
+        document.createElement("option");
+
+        option.value=name;
+        option.textContent=name;
+
+        series.appendChild(option);
+
+    });
+
+});
+
+
+/* =========================================================
+   SERIES
+========================================================= */
+
+series.addEventListener("change",()=>{
+
+    model.innerHTML=
+        `<option value="">Select Model</option>`;
+
+    if(!series.value){
+
+        model.disabled=true;
+        return;
+    }
+
+    model.disabled=false;
+
+    phoneData[brand.value][series.value]
+    .forEach(name=>{
+
+        const option=
+        document.createElement("option");
+
+        option.value=name;
+        option.textContent=name;
+
+        model.appendChild(option);
+
+    });
+
+});
+
+
+/* =========================================================
+   MODEL
+========================================================= */
+
+model.addEventListener("change",()=>{
+
+    if(!model.value)return;
+
+    document
+    .getElementById("phoneTitle")
+    .textContent=model.value;
+
+    updatePhoneMask(
+        brand.value,
+        series.value,
+        model.value
+    );
+
+    status.textContent=
+        model.value+
+        " selected • Choose a Wallora wallpaper.";
+
+});
+
+
+/* =========================================================
+   MODEL-SPECIFIC MASK
+========================================================= */
+
+function updatePhoneMask(
+    brandName,
+    seriesName,
+    modelName
+){
+
+    cameraMask.className="camera-mask";
+
+    /*
+       This is intentionally model-based.
+       Exact physical camera dimensions can later
+       be replaced by measured/reference templates.
+    */
+
+    let mask="mask-left-vertical";
+
+    if(brandName==="apple")
+        mask="mask-square";
+
+    if(brandName==="google")
+        mask="mask-square";
+
+    if(
+        brandName==="xiaomi" ||
+        brandName==="vivo"
+    )
+        mask="mask-round";
+
+    if(
+        brandName==="oneplus"
+    )
+        mask="mask-round";
+
+    if(
+        seriesName==="GT Series" ||
+        seriesName==="X Series"
+    )
+        mask="mask-visor";
+
+    if(
+        seriesName==="Z Fold" ||
+        seriesName==="Z Flip" ||
+        seriesName==="Razr"
+    )
+        mask="mask-center";
+
+    if(
+        seriesName==="Find X" ||
+        seriesName==="Find N"
+    )
+        mask="mask-round";
+
+    if(
+        seriesName==="F Series" &&
+        brandName==="poco"
+    )
+        mask="mask-visor";
+
+    cameraMask.classList.add(mask);
+
+    buildCamera(mask);
+
+}
+
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+function buildCamera(mask){
+
+    cameraMask.innerHTML="";
+
+    let count=3;
+
+    if(mask==="mask-visor")
+        count=3;
+
+    if(mask==="mask-center")
+        count=2;
+
+    if(mask==="mask-round")
+        count=4;
+
+    for(let i=0;i<count;i++){
+
+        const lens=
+        document.createElement("div");
+
+        lens.className="lens";
+
+        cameraMask.appendChild(lens);
+
+    }
+
+    const flash=
+    document.createElement("div");
+
+    flash.className="flash";
+
+    cameraMask.appendChild(flash);
+
+}
+
+
+/* =========================================================
+   WALLORA GALLERY RENDER
+========================================================= */
+
+function renderGallery(){
+
+    gallery.innerHTML="";
+
+    if(!WALLORA_GALLERY.length){
+
+        gallery.innerHTML=`
+        <div class="empty">
+            Wallora wallpapers are not connected yet.<br><br>
+            Connect the same wallpaper data used by
+            index.html to <b>WALLORA_GALLERY</b>.
+        </div>`;
+
+        return;
+    }
+
+    WALLORA_GALLERY.forEach((item,index)=>{
+
+        const card=
+        document.createElement("div");
+
+        card.className="wallpaper-card";
+
+        const image=
+        document.createElement("img");
+
+        image.src=
+            item.url ||
+            item.image ||
+            item.src;
+
+        image.loading="lazy";
+
+        const name=
+        document.createElement("div");
+
+        name.className="wallpaper-name";
+
+        name.textContent=
+            item.name ||
+            `Wallora Wallpaper ${index+1}`;
+
+        card.appendChild(image);
+        card.appendChild(name);
+
+        card.addEventListener("click",()=>{
+
+            document
+            .querySelectorAll(".wallpaper-card")
+            .forEach(x=>
+                x.classList.remove("active")
+            );
+
+            card.classList.add("active");
+
+            applyWallpaper(
+                image.src,
+                name.textContent
+            );
+
+        });
+
+        gallery.appendChild(card);
+
+    });
+
+}
+
+
+/* =========================================================
+   APPLY WALLPAPER
+========================================================= */
+
+function applyWallpaper(url,name){
+
+    if(!model.value){
+
+        status.textContent=
+            "First select your phone model.";
+
+        return;
+    }
+
+    skinImage.src=url;
+    skinImage.style.display="block";
+
+    status.textContent=
+        name+
+        " applied to "+
+        model.value+
+        " • Drag phone to rotate.";
+
+}
+
+
+/* =========================================================
+   VIEW
+========================================================= */
+
+let rotateX=-8;
+let rotateY=-25;
+let scale=1;
+
+function update(){
+
+    phone.style.transform=
+        `rotateX(${rotateX}deg)
+         rotateY(${rotateY}deg)
+         scale(${scale})`;
+
+}
+
+function frontView(){
+
+    rotateX=0;
+    rotateY=0;
+    update();
+
+}
+
+function backView(){
+
+    rotateX=0;
+    rotateY=180;
+    update();
+
+}
+
+function sideView(){
+
+    rotateX=0;
+    rotateY=90;
+    update();
+
+}
+
+function resetView(){
+
+    rotateX=-8;
+    rotateY=-25;
+    scale=1;
+    update();
+
+}
+
+function zoomIn(){
+
+    scale=Math.min(1.5,scale+.1);
+    update();
+
+}
+
+function zoomOut(){
+
+    scale=Math.max(.65,scale-.1);
+    update();
+
+}
+
+
+/* =========================================================
+   DRAG ROTATION
+========================================================= */
+
+let dragging=false;
+let lastX=0;
+let lastY=0;
+
+const viewer=
+document.getElementById("viewer");
+
+viewer.addEventListener("pointerdown",e=>{
+
+    dragging=true;
+
+    lastX=e.clientX;
+    lastY=e.clientY;
+
+    viewer.setPointerCapture(e.pointerId);
+
+});
+
+viewer.addEventListener("pointermove",e=>{
+
+    if(!dragging)return;
+
+    const dx=e.clientX-lastX;
+    const dy=e.clientY-lastY;
+
+    rotateY+=dx*.55;
+    rotateX-=dy*.35;
+
+    rotateX=
+        Math.max(-75,
+        Math.min(75,rotateX));
+
+    lastX=e.clientX;
+    lastY=e.clientY;
+
+    update();
+
+});
+
+viewer.addEventListener("pointerup",()=>{
+
+    dragging=false;
+
+});
+
+viewer.addEventListener("pointercancel",()=>{
+
+    dragging=false;
+
+});
+
+
+/* =========================================================
+   START
+========================================================= */
+
+renderGallery();
+update();
+
+</script>
+
+</body>
+</html>
