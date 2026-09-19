@@ -1,0 +1,2188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Wallora • Live Skin Preview</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    min-height:100vh;
+    color:#fff;
+    background:
+      radial-gradient(circle at 15% 0%,#3b1769 0%,transparent 34%),
+      radial-gradient(circle at 90% 15%,#24104b 0%,transparent 34%),
+      #08050e;
+}
+
+header{
+    padding:20px 15px;
+    text-align:center;
+    border-bottom:1px solid rgba(255,255,255,.09);
+    background:rgba(8,5,14,.78);
+    backdrop-filter:blur(18px);
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+
+header h1{
+    font-size:25px;
+}
+
+header p{
+    margin-top:6px;
+    color:#bcaed2;
+    font-size:13px;
+}
+
+.container{
+    width:min(1100px,94%);
+    margin:auto;
+    padding:22px 0 55px;
+}
+
+.panel{
+    background:rgba(255,255,255,.055);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:22px;
+    padding:18px;
+    margin-bottom:18px;
+    box-shadow:0 20px 60px rgba(0,0,0,.25);
+}
+
+.panel h3{
+    font-size:17px;
+}
+
+select,
+button{
+    width:100%;
+    padding:13px 15px;
+    margin-top:10px;
+    border-radius:13px;
+    border:1px solid rgba(255,255,255,.13);
+    background:#151020;
+    color:#fff;
+    font-size:15px;
+    outline:none;
+}
+
+select:disabled{
+    opacity:.45;
+}
+
+button{
+    cursor:pointer;
+    font-weight:700;
+}
+
+button:hover{
+    background:#25153b;
+}
+
+.primary{
+    background:linear-gradient(135deg,#7b32d4,#bd4cff);
+    border:0;
+}
+
+.model-info{
+    text-align:center;
+    margin-top:12px;
+    color:#c9bed7;
+    font-size:13px;
+}
+
+/* ================= VIEWER ================= */
+
+.viewer{
+    min-height:580px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    overflow:hidden;
+    border-radius:22px;
+    background:
+      radial-gradient(circle at 50% 35%,#33204d 0%,#100a18 50%,#09060d 100%);
+    touch-action:none;
+}
+
+.viewer-tip{
+    position:absolute;
+    bottom:15px;
+    left:50%;
+    transform:translateX(-50%);
+    color:#aaa;
+    font-size:12px;
+    text-align:center;
+    white-space:nowrap;
+}
+
+/* ================= 3D PHONE ================= */
+
+.phone-stage{
+    perspective:1400px;
+    width:280px;
+    height:520px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    touch-action:none;
+}
+
+.phone{
+    width:230px;
+    height:470px;
+    position:relative;
+    transform-style:preserve-3d;
+    cursor:grab;
+    user-select:none;
+    -webkit-user-select:none;
+    will-change:transform;
+}
+
+.phone:active{
+    cursor:grabbing;
+}
+
+.phone-body{
+    position:absolute;
+    inset:0;
+    border-radius:42px;
+    background:
+      linear-gradient(
+        135deg,
+        #e5e5e9 0%,
+        #898991 32%,
+        #24242a 68%,
+        #111116 100%
+      );
+    box-shadow:
+      0 40px 70px rgba(0,0,0,.72),
+      inset 0 0 9px rgba(255,255,255,.4);
+    transform-style:preserve-3d;
+}
+
+/* FRONT */
+
+.front{
+    position:absolute;
+    inset:7px;
+    border-radius:36px;
+    background:#020204;
+    transform:translateZ(8px);
+    overflow:hidden;
+    backface-visibility:hidden;
+}
+
+.screen{
+    position:absolute;
+    inset:4px;
+    border-radius:32px;
+    background:
+      radial-gradient(circle at 30% 15%,#53367d,#181020 45%,#020205 85%);
+    overflow:hidden;
+}
+
+.screen-glow{
+    position:absolute;
+    inset:0;
+    background:
+      linear-gradient(
+        120deg,
+        transparent 35%,
+        rgba(255,255,255,.13),
+        transparent 65%
+      );
+}
+
+/* DYNAMIC NOTCH */
+
+.dynamic-island{
+    position:absolute;
+    width:92px;
+    height:27px;
+    left:50%;
+    top:10px;
+    transform:translateX(-50%);
+    border-radius:20px;
+    background:#000;
+    z-index:4;
+}
+
+.dynamic-island.small{
+    width:72px;
+    height:23px;
+}
+
+/* BACK */
+
+.backside{
+    position:absolute;
+    inset:7px;
+    border-radius:36px;
+    background:
+      linear-gradient(145deg,#3c3c42,#121217);
+    transform:rotateY(180deg) translateZ(8px);
+    overflow:hidden;
+    backface-visibility:hidden;
+}
+
+.back-skin{
+    position:absolute;
+    inset:0;
+    border-radius:36px;
+    overflow:hidden;
+    background:#17171c;
+}
+
+.back-skin img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+}
+
+/* CAMERA */
+
+.camera-module{
+    position:absolute;
+    top:18px;
+    left:18px;
+    width:86px;
+    height:112px;
+    border-radius:21px;
+    background:
+      linear-gradient(145deg,#28282d,#0c0c10);
+    box-shadow:
+      0 7px 18px rgba(0,0,0,.65),
+      inset 0 1px 2px rgba(255,255,255,.12);
+    z-index:10;
+    transition:.25s ease;
+}
+
+/* iPhone camera */
+
+.camera-module.iphone{
+    width:91px;
+    height:91px;
+    right:16px;
+    left:auto;
+    border-radius:24px;
+}
+
+.camera-module.iphone .lens{
+    width:31px;
+    height:31px;
+}
+
+.camera-module.iphone .l1{
+    top:11px;
+    left:11px;
+}
+
+.camera-module.iphone .l2{
+    top:11px;
+    right:11px;
+}
+
+.camera-module.iphone .l3{
+    bottom:11px;
+    left:11px;
+}
+
+.camera-module.iphone .flash{
+    right:13px;
+    bottom:17px;
+}
+
+/* Pixel */
+
+.camera-module.pixel{
+    left:12px;
+    right:12px;
+    top:20px;
+    width:auto;
+    height:48px;
+    border-radius:22px;
+}
+
+/* Fold */
+
+.camera-module.fold{
+    width:76px;
+    height:88px;
+}
+
+/* LENS */
+
+.lens{
+    position:absolute;
+    width:30px;
+    height:30px;
+    border-radius:50%;
+    background:
+      radial-gradient(
+        circle at 34% 27%,
+        #8b8b91 0%,
+        #24242a 25%,
+        #050507 62%,
+        #000 100%
+      );
+    border:3px solid #303036;
+    box-shadow:
+      inset 0 0 4px rgba(255,255,255,.2),
+      0 2px 4px rgba(0,0,0,.6);
+}
+
+.l1{
+    top:10px;
+    left:10px;
+}
+
+.l2{
+    top:10px;
+    right:10px;
+}
+
+.l3{
+    bottom:10px;
+    left:10px;
+}
+
+.flash{
+    position:absolute;
+    right:13px;
+    bottom:18px;
+    width:13px;
+    height:13px;
+    border-radius:50%;
+    background:#d9d09e;
+    box-shadow:0 0 4px rgba(255,240,150,.4);
+}
+
+/* SIDE */
+
+.side{
+    position:absolute;
+    top:17px;
+    bottom:17px;
+    width:16px;
+    border-radius:10px;
+    background:
+      linear-gradient(
+        90deg,
+        #1b1b20,
+        #b2b2b8,
+        #303036
+      );
+    transform-style:preserve-3d;
+}
+
+.side.left{
+    left:-8px;
+    transform:rotateY(90deg) translateZ(109px);
+}
+
+.side.right{
+    right:-8px;
+    transform:rotateY(90deg) translateZ(-109px);
+}
+
+/* ================= CONTROLS ================= */
+
+.controls{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
+}
+
+.rotation-info{
+    text-align:center;
+    color:#aaa;
+    font-size:12px;
+    margin-top:10px;
+}
+
+/* ================= GALLERY ================= */
+
+.gallery{
+    display:grid;
+    grid-template-columns:
+      repeat(auto-fill,minmax(105px,1fr));
+    gap:10px;
+    margin-top:13px;
+}
+
+.gallery-item{
+    aspect-ratio:1/1.18;
+    border-radius:14px;
+    overflow:hidden;
+    border:2px solid transparent;
+    cursor:pointer;
+    background:#120d19;
+    position:relative;
+}
+
+.gallery-item.active{
+    border-color:#c15aff;
+    box-shadow:0 0 20px rgba(190,80,255,.3);
+}
+
+.gallery-item img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+}
+
+.gallery-item span{
+    position:absolute;
+    bottom:0;
+    left:0;
+    right:0;
+    padding:5px;
+    background:rgba(0,0,0,.6);
+    font-size:10px;
+    text-align:center;
+}
+
+.gallery-message{
+    grid-column:1/-1;
+    text-align:center;
+    color:#aaa;
+    padding:28px 10px;
+}
+
+/* ================= CAMERA ================= */
+
+.camera-box{
+    display:none;
+    margin-top:15px;
+}
+
+.camera-box.active{
+    display:block;
+}
+
+.camera-preview{
+    position:relative;
+    width:100%;
+    max-width:650px;
+    margin:15px auto;
+    border-radius:20px;
+    overflow:hidden;
+    background:#000;
+    border:1px solid rgba(255,255,255,.1);
+}
+
+#cameraVideo{
+    display:block;
+    width:100%;
+    max-height:600px;
+    object-fit:cover;
+}
+
+.camera-overlay{
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:55%;
+    height:65%;
+    transform:translate(-50%,-50%);
+    border:2px dashed #c36cff;
+    border-radius:30px;
+    box-shadow:0 0 35px rgba(180,70,255,.35);
+    pointer-events:none;
+}
+
+.camera-overlay span{
+    position:absolute;
+    bottom:-36px;
+    width:100%;
+    left:0;
+    text-align:center;
+    color:#ddd;
+    font-size:12px;
+}
+
+.camera-status{
+    text-align:center;
+    color:#aaa;
+    font-size:12px;
+    margin:8px 0;
+}
+
+#capturedCanvas{
+    display:none;
+}
+
+/* ================= CAPTURE RESULT ================= */
+
+.capture-result{
+    display:none;
+    margin-top:15px;
+}
+
+.capture-result.active{
+    display:block;
+}
+
+.capture-card{
+    max-width:650px;
+    margin:auto;
+    border-radius:18px;
+    overflow:hidden;
+    background:#0e0a14;
+    border:1px solid rgba(255,255,255,.1);
+}
+
+#capturedImage{
+    display:block;
+    width:100%;
+    max-height:500px;
+    object-fit:contain;
+    background:#000;
+}
+
+.capture-title{
+    padding:12px;
+    text-align:center;
+    color:#ccc;
+    font-size:13px;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:650px){
+
+    header h1{
+        font-size:22px;
+    }
+
+    .controls{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .viewer{
+        min-height:510px;
+    }
+
+    .phone-stage{
+        transform:scale(.82);
+    }
+
+    .viewer-tip{
+        bottom:9px;
+        font-size:10px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Wallora • Live Skin Preview</h1>
+    <p>Choose your phone and try a Wallora skin</p>
+</header>
+
+<div class="container">
+
+<!-- ================= PHONE SELECT ================= -->
+
+<div class="panel">
+
+    <select id="brandSelect">
+        <option value="">Select Brand</option>
+    </select>
+
+    <select id="seriesSelect" disabled>
+        <option value="">Select Series</option>
+    </select>
+
+    <select id="modelSelect" disabled>
+        <option value="">Select Model</option>
+    </select>
+
+    <div class="model-info" id="modelInfo">
+        Select your phone
+    </div>
+
+</div>
+
+
+<!-- ================= 3D VIEWER ================= -->
+
+<div class="panel">
+
+    <div class="viewer">
+
+        <div class="phone-stage">
+
+            <div class="phone" id="phone">
+
+                <div class="phone-body">
+
+                    <!-- FRONT -->
+
+                    <div class="front">
+
+                        <div class="screen">
+                            <div class="dynamic-island"></div>
+                            <div class="screen-glow"></div>
+                        </div>
+
+                    </div>
+
+
+                    <!-- BACK -->
+
+                    <div class="backside">
+
+                        <div class="back-skin">
+                            <img
+                                id="skinImage"
+                                src=""
+                                alt="Wallora Skin">
+                        </div>
+
+                        <div
+                            class="camera-module"
+                            id="cameraModule">
+
+                            <div class="lens l1"></div>
+                            <div class="lens l2"></div>
+                            <div class="lens l3"></div>
+
+                            <div class="flash"></div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SIDES -->
+
+                    <div class="side left"></div>
+                    <div class="side right"></div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="viewer-tip">
+            Drag / Swipe the phone to rotate 360°
+        </div>
+
+    </div>
+
+
+    <div class="controls">
+
+        <button onclick="setView('front')">
+            Front
+        </button>
+
+        <button onclick="setView('back')">
+            Back
+        </button>
+
+        <button onclick="setView('side')">
+            Side
+        </button>
+
+        <button onclick="resetView()">
+            Reset
+        </button>
+
+    </div>
+
+    <div class="rotation-info" id="rotationInfo">
+        0° • Front
+    </div>
+
+</div>
+
+
+<!-- ================= WALLORA GALLERY ================= -->
+
+<div class="panel">
+
+    <h3>Choose Skin From Wallora</h3>
+
+    <div
+        id="gallery"
+        class="gallery">
+
+        <div class="gallery-message">
+            Loading Wallora Wallpapers...
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ================= UNKNOWN PHONE CAMERA ================= -->
+
+<div class="panel">
+
+    <h3>📷 My Phone Isn't Listed?</h3>
+
+    <p style="
+        color:#aaa;
+        margin-top:7px;
+        font-size:13px;
+        line-height:1.6">
+
+        Camera open karo, apna phone camera ke saamne rakho.
+        Capture ke baad sirf Wallora ke wallpapers available
+        honge.
+
+    </p>
+
+    <button
+        class="primary"
+        onclick="openCamera()">
+
+        📷 Open Live Camera
+
+    </button>
+
+
+    <div
+        class="camera-box"
+        id="cameraBox">
+
+        <div class="camera-preview">
+
+            <video
+                id="cameraVideo"
+                autoplay
+                playsinline>
+            </video>
+
+            <div class="camera-overlay">
+
+                <span>
+                    Phone ko frame ke andar rakho
+                </span>
+
+            </div>
+
+        </div>
+
+        <div
+            class="camera-status"
+            id="cameraStatus">
+        </div>
+
+        <button onclick="capturePhone()">
+            📸 Capture Phone
+        </button>
+
+        <button onclick="closeCamera()">
+            ✕ Close Camera
+        </button>
+
+    </div>
+
+
+    <!-- CAPTURE RESULT -->
+
+    <div
+        class="capture-result"
+        id="captureResult">
+
+        <div class="capture-card">
+
+            <img
+                id="capturedImage"
+                alt="Captured Phone">
+
+            <div class="capture-title">
+                Phone captured • Now choose a skin
+                from Wallora Gallery above.
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <canvas id="capturedCanvas"></canvas>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   WALLORA SUPABASE CONFIG
+   =========================================================
+
+   IMPORTANT:
+   Yahan apni EXISTING Wallora browser/public credentials
+   paste karo.
+
+   Service-role key kabhi mat use karna.
+========================================================= */
+
+const SUPABASE_URL =
+    "PASTE_YOUR_EXISTING_SUPABASE_URL_HERE";
+
+const SUPABASE_ANON_KEY =
+    "PASTE_YOUR_EXISTING_SUPABASE_ANON_KEY_HERE";
+
+
+/* =========================================================
+   WALLPAPER STORAGE BUCKET
+========================================================= */
+
+const WALLPAPER_BUCKET = "wallpapers";
+
+
+/* =========================================================
+   PHONE DATA
+========================================================= */
+
+const phoneData = {
+
+Samsung:{
+    "S Series":[
+        "S26","S26+","S26 Ultra",
+        "S25","S25+","S25 Ultra","S25 FE",
+        "S24","S24+","S24 Ultra","S24 FE",
+        "S23","S23+","S23 Ultra","S23 FE",
+        "S22","S22+","S22 Ultra",
+        "S21","S21+","S21 Ultra","S21 FE",
+        "S20","S20+","S20 Ultra","S20 FE"
+    ],
+
+    "A Series":[
+        "A56","A55","A54","A53",
+        "A36","A35","A34",
+        "A26","A25","A24",
+        "A16","A15","A14","A13"
+    ],
+
+    "M Series":[
+        "M56","M55","M54","M53",
+        "M36","M35","M34",
+        "M16","M15","M14"
+    ],
+
+    "F Series":[
+        "F56","F55","F54","F34",
+        "F16","F15","F14"
+    ],
+
+    "Z Fold":[
+        "Z Fold7","Z Fold6","Z Fold5","Z Fold4"
+    ],
+
+    "Z Flip":[
+        "Z Flip7","Z Flip6","Z Flip5","Z Flip4"
+    ]
+},
+
+Motorola:{
+    Razr:[
+        "Razr 60 Ultra",
+        "Razr 60",
+        "Razr 50 Ultra",
+        "Razr 50"
+    ],
+
+    Edge:[
+        "Edge 60 Pro",
+        "Edge 60",
+        "Edge 50 Ultra",
+        "Edge 50 Pro",
+        "Edge 50 Fusion"
+    ],
+
+    "Moto G":[
+        "Moto G45",
+        "Moto G85",
+        "Moto G75",
+        "Moto G64",
+        "Moto G54"
+    ],
+
+    "Moto E":[
+        "Moto E15",
+        "Moto E14"
+    ]
+},
+
+Xiaomi:{
+    "Number Series":[
+        "Xiaomi 15",
+        "Xiaomi 15 Ultra",
+        "Xiaomi 14",
+        "Xiaomi 14 Ultra",
+        "Xiaomi 13"
+    ]
+},
+
+Redmi:{
+    "Note Series":[
+        "Redmi Note 15 Pro+",
+        "Redmi Note 15 Pro",
+        "Redmi Note 15",
+        "Redmi Note 14 Pro+",
+        "Redmi Note 14 Pro",
+        "Redmi Note 14"
+    ],
+
+    "Number Series":[
+        "Redmi 15",
+        "Redmi 14C",
+        "Redmi 13",
+        "Redmi 13C"
+    ],
+
+    "K Series":[
+        "Redmi K80",
+        "Redmi K70"
+    ]
+},
+
+Realme:{
+    "GT Series":[
+        "GT 7 Pro",
+        "GT 7",
+        "GT 6"
+    ],
+
+    "Number Series":[
+        "Realme 14 Pro+",
+        "Realme 14 Pro",
+        "Realme 13 Pro+",
+        "Realme 13 Pro"
+    ],
+
+    Narzo:[
+        "Narzo 80 Pro",
+        "Narzo 70 Pro"
+    ],
+
+    "P Series":[
+        "P3 Pro",
+        "P3"
+    ],
+
+    "C Series":[
+        "C75",
+        "C65",
+        "C55"
+    ]
+},
+
+Vivo:{
+    "X Series":[
+        "X200 Pro",
+        "X200",
+        "X100 Pro",
+        "X100"
+    ],
+
+    "X Fold":[
+        "X Fold5",
+        "X Fold3 Pro"
+    ],
+
+    "V Series":[
+        "V60",
+        "V50",
+        "V40"
+    ],
+
+    "T Series":[
+        "T4 Pro",
+        "T4",
+        "T3 Pro"
+    ],
+
+    "Y Series":[
+        "Y400",
+        "Y300",
+        "Y200"
+    ]
+},
+
+OPPO:{
+    "Find X":[
+        "Find X8 Ultra",
+        "Find X8 Pro",
+        "Find X8"
+    ],
+
+    "Find N":[
+        "Find N5",
+        "Find N3"
+    ],
+
+    Reno:[
+        "Reno 14 Pro",
+        "Reno 14",
+        "Reno 13 Pro",
+        "Reno 13"
+    ],
+
+    "F Series":[
+        "F29 Pro",
+        "F27 Pro+"
+    ],
+
+    "A Series":[
+        "A5 Pro",
+        "A5",
+        "A3 Pro"
+    ]
+},
+
+POCO:{
+    "F Series":[
+        "F7 Ultra",
+        "F7 Pro",
+        "F7"
+    ],
+
+    "X Series":[
+        "X7 Pro",
+        "X7"
+    ],
+
+    "M Series":[
+        "M7 Pro",
+        "M7"
+    ],
+
+    "C Series":[
+        "C75",
+        "C65"
+    ]
+},
+
+Apple:{
+    "iPhone":[
+        "iPhone 17 Pro Max",
+        "iPhone 17 Pro",
+        "iPhone 17",
+        "iPhone 17 Air",
+
+        "iPhone 16 Pro Max",
+        "iPhone 16 Pro",
+        "iPhone 16 Plus",
+        "iPhone 16",
+
+        "iPhone 15 Pro Max",
+        "iPhone 15 Pro",
+        "iPhone 15 Plus",
+        "iPhone 15",
+
+        "iPhone 14 Pro Max",
+        "iPhone 14 Pro",
+        "iPhone 14 Plus",
+        "iPhone 14",
+
+        "iPhone 13 Pro Max",
+        "iPhone 13 Pro",
+        "iPhone 13",
+
+        "iPhone 12 Pro Max",
+        "iPhone 12 Pro",
+        "iPhone 12",
+
+        "iPhone 11 Pro Max",
+        "iPhone 11 Pro",
+        "iPhone 11",
+
+        "iPhone XS Max",
+        "iPhone XS",
+        "iPhone XR",
+        "iPhone X",
+
+        "iPhone SE 3",
+        "iPhone SE 2"
+    ]
+},
+
+OnePlus:{
+    "OnePlus":[
+        "OnePlus 13",
+        "OnePlus 13R",
+        "OnePlus 12",
+        "OnePlus 12R",
+        "OnePlus 11",
+        "OnePlus 10 Pro"
+    ]
+},
+
+"Google Pixel":{
+    Pixel:[
+        "Pixel 10 Pro XL",
+        "Pixel 10 Pro",
+        "Pixel 10",
+        "Pixel 9 Pro XL",
+        "Pixel 9 Pro",
+        "Pixel 9",
+        "Pixel 8 Pro",
+        "Pixel 8",
+        "Pixel 7 Pro",
+        "Pixel 7"
+    ]
+}
+
+};
+
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const brandSelect =
+    document.getElementById("brandSelect");
+
+const seriesSelect =
+    document.getElementById("seriesSelect");
+
+const modelSelect =
+    document.getElementById("modelSelect");
+
+const modelInfo =
+    document.getElementById("modelInfo");
+
+const phone =
+    document.getElementById("phone");
+
+const cameraModule =
+    document.getElementById("cameraModule");
+
+const gallery =
+    document.getElementById("gallery");
+
+const skinImage =
+    document.getElementById("skinImage");
+
+const rotationInfo =
+    document.getElementById("rotationInfo");
+
+
+/* =========================================================
+   LOAD BRANDS
+========================================================= */
+
+Object.keys(phoneData).forEach(brand=>{
+
+    const option =
+        document.createElement("option");
+
+    option.value=brand;
+    option.textContent=brand;
+
+    brandSelect.appendChild(option);
+
+});
+
+
+/* =========================================================
+   BRAND SELECT
+========================================================= */
+
+brandSelect.addEventListener("change",()=>{
+
+    seriesSelect.innerHTML =
+        '<option value="">Select Series</option>';
+
+    modelSelect.innerHTML =
+        '<option value="">Select Model</option>';
+
+    modelSelect.disabled=true;
+
+    const brand =
+        brandSelect.value;
+
+    if(!brand){
+
+        seriesSelect.disabled=true;
+
+        return;
+    }
+
+    Object.keys(phoneData[brand]).forEach(series=>{
+
+        const option =
+            document.createElement("option");
+
+        option.value=series;
+        option.textContent=series;
+
+        seriesSelect.appendChild(option);
+
+    });
+
+    seriesSelect.disabled=false;
+
+});
+
+
+/* =========================================================
+   SERIES SELECT
+========================================================= */
+
+seriesSelect.addEventListener("change",()=>{
+
+    modelSelect.innerHTML =
+        '<option value="">Select Model</option>';
+
+    const brand =
+        brandSelect.value;
+
+    const series =
+        seriesSelect.value;
+
+    if(!series){
+
+        modelSelect.disabled=true;
+
+        return;
+    }
+
+    phoneData[brand][series].forEach(model=>{
+
+        const option =
+            document.createElement("option");
+
+        option.value=model;
+        option.textContent=model;
+
+        modelSelect.appendChild(option);
+
+    });
+
+    modelSelect.disabled=false;
+
+});
+
+
+/* =========================================================
+   MODEL SELECT
+========================================================= */
+
+modelSelect.addEventListener("change",()=>{
+
+    const model =
+        modelSelect.value;
+
+    if(!model) return;
+
+    modelInfo.textContent =
+        "Selected: "+model;
+
+    applyModelDesign(model);
+
+    resetView();
+
+});
+
+
+/* =========================================================
+   MODEL DESIGN
+========================================================= */
+
+function applyModelDesign(model){
+
+    cameraModule.className =
+        "camera-module";
+
+    const lower =
+        model.toLowerCase();
+
+
+    /* iPhone */
+
+    if(lower.includes("iphone")){
+
+        cameraModule.classList.add("iphone");
+
+        return;
+    }
+
+
+    /* Pixel */
+
+    if(lower.includes("pixel")){
+
+        cameraModule.classList.add("pixel");
+
+        return;
+    }
+
+
+    /* Fold */
+
+    if(
+        lower.includes("fold") ||
+        lower.includes("flip")
+    ){
+
+        cameraModule.classList.add("fold");
+
+        return;
+    }
+
+
+    /* Default Android */
+
+    cameraModule.style.left="18px";
+    cameraModule.style.right="auto";
+    cameraModule.style.top="18px";
+    cameraModule.style.width="86px";
+    cameraModule.style.height="112px";
+}
+
+
+/* =========================================================
+   360° ROTATION
+========================================================= */
+
+let rotateX=-8;
+let rotateY=0;
+
+function normalizeAngle(angle){
+
+    angle=angle%360;
+
+    if(angle<0)
+        angle+=360;
+
+    return angle;
+}
+
+function getViewName(){
+
+    const angle =
+        normalizeAngle(rotateY);
+
+    if(angle<45 || angle>=315)
+        return "Front";
+
+    if(angle>=45 && angle<135)
+        return "Right Side";
+
+    if(angle>=135 && angle<225)
+        return "Back";
+
+    return "Left Side";
+}
+
+function updateRotation(){
+
+    phone.style.transform =
+        `rotateX(${rotateX}deg)
+         rotateY(${rotateY}deg)`;
+
+    const angle =
+        Math.round(normalizeAngle(rotateY));
+
+    rotationInfo.textContent =
+        `${angle}° • ${getViewName()}`;
+}
+
+
+/* ================= VIEW BUTTONS ================= */
+
+function setView(view){
+
+    if(view==="front"){
+
+        rotateX=0;
+        rotateY=0;
+
+    }
+
+    if(view==="back"){
+
+        rotateX=0;
+        rotateY=180;
+
+    }
+
+    if(view==="side"){
+
+        rotateX=0;
+        rotateY=90;
+
+    }
+
+    updateRotation();
+}
+
+
+function resetView(){
+
+    rotateX=-8;
+    rotateY=0;
+
+    updateRotation();
+}
+
+
+/* =========================================================
+   DRAG / TOUCH 360
+========================================================= */
+
+let dragging=false;
+
+let startX=0;
+let startY=0;
+
+let startRotateY=0;
+let startRotateX=0;
+
+phone.addEventListener(
+    "pointerdown",
+    e=>{
+
+        dragging=true;
+
+        startX=e.clientX;
+        startY=e.clientY;
+
+        startRotateY=rotateY;
+        startRotateX=rotateX;
+
+        phone.setPointerCapture(
+            e.pointerId
+        );
+
+    }
+);
+
+
+phone.addEventListener(
+    "pointermove",
+    e=>{
+
+        if(!dragging)
+            return;
+
+        const dx =
+            e.clientX-startX;
+
+        const dy =
+            e.clientY-startY;
+
+        rotateY =
+            startRotateY+(dx*.65);
+
+        rotateX =
+            startRotateX-(dy*.35);
+
+        rotateX =
+            Math.max(
+                -70,
+                Math.min(70,rotateX)
+            );
+
+        updateRotation();
+
+    }
+);
+
+
+function stopDragging(){
+
+    dragging=false;
+
+}
+
+
+phone.addEventListener(
+    "pointerup",
+    stopDragging
+);
+
+phone.addEventListener(
+    "pointercancel",
+    stopDragging
+);
+
+phone.addEventListener(
+    "pointerleave",
+    e=>{
+        if(e.pointerType==="mouse")
+            dragging=false;
+    }
+);
+
+
+/* =========================================================
+   WALLORA IMAGE URL
+========================================================= */
+
+function createPublicStorageUrl(path){
+
+    if(!SUPABASE_URL ||
+       SUPABASE_URL.includes("PASTE_"))
+        return "";
+
+    return (
+        SUPABASE_URL.replace(/\/$/,"")+
+        "/storage/v1/object/public/"+
+        WALLPAPER_BUCKET+
+        "/"+
+        path.split("/")
+            .map(encodeURIComponent)
+            .join("/")
+    );
+
+}
+
+
+/* =========================================================
+   SUPABASE REQUEST
+========================================================= */
+
+async function supabaseRequest(
+    endpoint,
+    options={}
+){
+
+    if(
+        !SUPABASE_URL ||
+        !SUPABASE_ANON_KEY ||
+        SUPABASE_URL.includes("PASTE_") ||
+        SUPABASE_ANON_KEY.includes("PASTE_")
+    ){
+
+        throw new Error(
+            "Supabase credentials are not configured."
+        );
+
+    }
+
+    const response =
+        await fetch(
+            SUPABASE_URL.replace(/\/$/,"")+
+            endpoint,
+            {
+                ...options,
+
+                headers:{
+                    apikey:SUPABASE_ANON_KEY,
+
+                    Authorization:
+                        "Bearer "+
+                        SUPABASE_ANON_KEY,
+
+                    ...(options.headers || {})
+                }
+            }
+        );
+
+    if(!response.ok){
+
+        const text =
+            await response.text();
+
+        throw new Error(
+            "Supabase error "+
+            response.status+
+            ": "+
+            text
+        );
+
+    }
+
+    return response.json();
+
+}
+
+
+/* =========================================================
+   EXTRACT IMAGE URL
+========================================================= */
+
+function extractImageUrl(item){
+
+    if(typeof item==="string")
+        return createPublicStorageUrl(item);
+
+    if(!item)
+        return "";
+
+    if(item.url)
+        return item.url;
+
+    if(item.src)
+        return item.src;
+
+    if(item.image)
+        return item.image;
+
+    if(item.publicUrl)
+        return item.publicUrl;
+
+    if(item.path)
+        return createPublicStorageUrl(item.path);
+
+    if(item.name)
+        return createPublicStorageUrl(item.name);
+
+    return "";
+
+}
+
+
+/* =========================================================
+   LOAD WALLORA GALLERY
+========================================================= */
+
+async function loadWalloraGallery(){
+
+    gallery.innerHTML=`
+        <div class="gallery-message">
+            Loading Wallora Wallpapers...
+        </div>
+    `;
+
+
+    /* First: optional existing global gallery */
+
+    let globalItems=[];
+
+    try{
+
+        if(
+            Array.isArray(
+                window.WALLORA_GALLERY
+            )
+        ){
+
+            globalItems =
+                window.WALLORA_GALLERY;
+
+        }
+
+    }catch(e){}
+
+
+    if(globalItems.length){
+
+        renderGallery(globalItems);
+
+        return;
+    }
+
+
+    /* Second: Supabase Storage */
+
+    try{
+
+        const data =
+            await supabaseRequest(
+                "/storage/v1/object/list/"+
+                WALLPAPER_BUCKET,
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify({
+                        prefix:"",
+                        limit:1000,
+                        offset:0,
+                        sortBy:{
+                            column:"created_at",
+                            order:"desc"
+                        }
+                    })
+                }
+            );
+
+
+        if(
+            Array.isArray(data) &&
+            data.length
+        ){
+
+            renderGallery(data);
+
+            return;
+        }
+
+
+        showGalleryMessage(
+            "No Wallora wallpapers found."
+        );
+
+    }catch(error){
+
+        console.error(
+            "Wallora gallery:",
+            error
+        );
+
+
+        showGalleryMessage(
+            "Wallora wallpapers load nahi ho rahe. "+
+            "Supabase URL, public anon key aur "+
+            "'wallpapers' bucket check karo."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   GALLERY RENDER
+========================================================= */
+
+function renderGallery(items){
+
+    gallery.innerHTML="";
+
+    let count=0;
+
+    items.forEach((item,index)=>{
+
+        const url =
+            extractImageUrl(item);
+
+        if(!url)
+            return;
+
+        count++;
+
+        const div =
+            document.createElement("div");
+
+        div.className=
+            "gallery-item";
+
+
+        const img =
+            document.createElement("img");
+
+        img.loading="lazy";
+
+        img.alt=
+            "Wallora Wallpaper";
+
+
+        img.src=url;
+
+
+        img.onerror=()=>{
+
+            div.style.display="none";
+
+        };
+
+
+        const label =
+            document.createElement("span");
+
+        label.textContent=
+            "Wallora";
+
+
+        div.appendChild(img);
+        div.appendChild(label);
+
+
+        div.addEventListener(
+            "click",
+            ()=>{
+
+                document
+                    .querySelectorAll(
+                        ".gallery-item"
+                    )
+                    .forEach(item=>{
+                        item.classList
+                            .remove("active");
+                    });
+
+
+                div.classList.add("active");
+
+
+                skinImage.src=url;
+
+                activeSkin=url;
+
+
+                /*
+                   Camera capture ke baad selected
+                   Wallora skin bhi automatically
+                   available rahegi.
+                */
+
+                if(capturedImage.src){
+
+                    cameraSkinSelected=true;
+
+                }
+
+            }
+        );
+
+
+        gallery.appendChild(div);
+
+    });
+
+
+    if(!count){
+
+        showGalleryMessage(
+            "Wallora gallery me valid wallpapers nahi mile."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   GALLERY MESSAGE
+========================================================= */
+
+function showGalleryMessage(message){
+
+    gallery.innerHTML=`
+        <div class="gallery-message">
+            ${escapeHtml(message)}
+        </div>
+    `;
+
+}
+
+
+function escapeHtml(text){
+
+    return String(text)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================================================
+   ACTIVE SKIN
+========================================================= */
+
+let activeSkin="";
+
+let cameraSkinSelected=false;
+
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+const cameraBox =
+    document.getElementById(
+        "cameraBox"
+    );
+
+const cameraVideo =
+    document.getElementById(
+        "cameraVideo"
+    );
+
+const capturedCanvas =
+    document.getElementById(
+        "capturedCanvas"
+    );
+
+const capturedImage =
+    document.getElementById(
+        "capturedImage"
+    );
+
+const captureResult =
+    document.getElementById(
+        "captureResult"
+    );
+
+const cameraStatus =
+    document.getElementById(
+        "cameraStatus"
+    );
+
+let cameraStream=null;
+
+
+/* =========================================================
+   OPEN CAMERA
+========================================================= */
+
+async function openCamera(){
+
+    if(
+        !navigator.mediaDevices ||
+        !navigator.mediaDevices.getUserMedia
+    ){
+
+        alert(
+            "Is browser me camera support nahi hai. "+
+            "HTTPS website par Chrome use karo."
+        );
+
+        return;
+    }
+
+
+    try{
+
+        cameraStatus.textContent=
+            "Camera permission request ho rahi hai...";
+
+
+        cameraStream =
+            await navigator.mediaDevices
+                .getUserMedia({
+
+                    video:{
+                        facingMode:{
+                            ideal:"environment"
+                        },
+
+                        width:{
+                            ideal:1280
+                        },
+
+                        height:{
+                            ideal:720
+                        }
+                    },
+
+                    audio:false
+
+                });
+
+
+        cameraVideo.srcObject=
+            cameraStream;
+
+
+        cameraBox.classList.add(
+            "active"
+        );
+
+
+        cameraStatus.textContent=
+            "Camera ready • Phone ko frame ke andar rakho.";
+
+    }catch(error){
+
+        console.error(error);
+
+        cameraStatus.textContent=
+            "Camera open nahi hua.";
+
+        alert(
+            "Camera permission allow karo. "+
+            "Wallora HTTPS par hona chahiye."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   CAPTURE PHONE
+========================================================= */
+
+function capturePhone(){
+
+    if(
+        !cameraVideo.videoWidth ||
+        !cameraVideo.videoHeight
+    ){
+
+        alert(
+            "Camera ready hone do."
+        );
+
+        return;
+    }
+
+
+    capturedCanvas.width =
+        cameraVideo.videoWidth;
+
+    capturedCanvas.height =
+        cameraVideo.videoHeight;
+
+
+    const ctx =
+        capturedCanvas.getContext(
+            "2d"
+        );
+
+
+    ctx.drawImage(
+        cameraVideo,
+        0,
+        0,
+        capturedCanvas.width,
+        capturedCanvas.height
+    );
+
+
+    const imageData =
+        capturedCanvas.toDataURL(
+            "image/jpeg",
+            .92
+        );
+
+
+    capturedImage.src=
+        imageData;
+
+
+    captureResult.classList.add(
+        "active"
+    );
+
+
+    cameraStatus.textContent=
+        "Phone captured successfully.";
+
+
+    /*
+       IMPORTANT:
+       Captured image sirf preview ke liye hai.
+       Isko wallpaper source nahi banaya ja raha.
+       Wallpaper hamesha Wallora Gallery se hi aayega.
+    */
+
+    closeCamera();
+
+
+    /*
+       Gallery ko visible area me scroll
+       karne ki zarurat nahi; user manually
+       Wallora wallpaper select karega.
+    */
+
+}
+
+
+/* =========================================================
+   CLOSE CAMERA
+========================================================= */
+
+function closeCamera(){
+
+    if(cameraStream){
+
+        cameraStream
+            .getTracks()
+            .forEach(
+                track=>{
+                    track.stop();
+                }
+            );
+
+        cameraStream=null;
+
+    }
+
+
+    cameraVideo.srcObject=null;
+
+    cameraBox.classList.remove(
+        "active"
+    );
+
+}
+
+
+/* =========================================================
+   PAGE START
+========================================================= */
+
+updateRotation();
+
+loadWalloraGallery();
+
+
+/* =========================================================
+   OPTIONAL: LOAD SAVED SKIN
+========================================================= */
+
+try{
+
+    const savedSkin =
+        localStorage.getItem(
+            "wallora-selected-skin"
+        );
+
+    if(savedSkin){
+
+        skinImage.src=savedSkin;
+
+        activeSkin=savedSkin;
+
+    }
+
+}catch(e){}
+
+
+/* =========================================================
+   SAVE SELECTED SKIN
+========================================================= */
+
+skinImage.addEventListener(
+    "load",
+    ()=>{
+
+        if(!activeSkin)
+            return;
+
+        try{
+
+            localStorage.setItem(
+                "wallora-selected-skin",
+                activeSkin
+            );
+
+        }catch(e){}
+
+    }
+);
+
+</script>
+
+</body>
+</html>
