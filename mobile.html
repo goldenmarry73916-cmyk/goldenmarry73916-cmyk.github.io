@@ -1,0 +1,1849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Wallora • Mobile Wallpapers</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+    --bg:#f5f3ff;
+    --bg2:#ffffff;
+    --card:rgba(255,255,255,.82);
+    --text:#171323;
+    --muted:#77718b;
+    --purple:#8b5cf6;
+    --purple2:#c084fc;
+    --border:rgba(139,92,246,.16);
+    --shadow:0 18px 45px rgba(66,35,120,.13);
+}
+
+html,body{
+    width:100%;
+    min-height:100%;
+}
+
+body{
+    font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    color:var(--text);
+    background:
+        radial-gradient(circle at 10% 0%,rgba(192,132,252,.20),transparent 30%),
+        radial-gradient(circle at 90% 10%,rgba(139,92,246,.18),transparent 30%),
+        linear-gradient(135deg,#f7f5ff,#eeeaff);
+    overflow-x:hidden;
+}
+
+button,
+input{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+header{
+    position:sticky;
+    top:0;
+    z-index:100;
+    height:74px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 18px;
+    background:rgba(255,255,255,.72);
+    backdrop-filter:blur(22px);
+    -webkit-backdrop-filter:blur(22px);
+    border-bottom:1px solid rgba(139,92,246,.13);
+    box-shadow:0 8px 30px rgba(44,25,80,.07);
+}
+
+.logo{
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+    white-space:nowrap;
+    font-size:21px;
+    font-weight:900;
+    letter-spacing:-.6px;
+    color:#171323;
+}
+
+.logo::before{
+    content:"";
+    display:inline-block;
+    width:9px;
+    height:9px;
+    margin-right:7px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--purple),var(--purple2));
+    box-shadow:0 0 14px rgba(139,92,246,.65);
+}
+
+.logo span{
+    color:var(--purple);
+}
+
+.back-btn,
+.upload-btn{
+    border:1px solid var(--border);
+    background:rgba(255,255,255,.75);
+    color:#4c3b68;
+    padding:10px 14px;
+    border-radius:13px;
+    font-weight:750;
+    transition:.25s ease;
+    box-shadow:0 7px 20px rgba(65,40,110,.07);
+}
+
+.back-btn:hover,
+.upload-btn:hover{
+    transform:translateY(-2px);
+    border-color:rgba(139,92,246,.35);
+    box-shadow:0 12px 28px rgba(105,61,180,.15);
+}
+
+.upload-btn{
+    color:white;
+    border:0;
+    background:linear-gradient(135deg,#8b5cf6,#a855f7);
+    box-shadow:0 10px 24px rgba(139,92,246,.30);
+}
+
+.hero{
+    max-width:1100px;
+    margin:0 auto;
+    padding:55px 20px 24px;
+    text-align:center;
+}
+
+.hero h1{
+    font-size:clamp(32px,6vw,58px);
+    line-height:1.05;
+    font-weight:950;
+    letter-spacing:-2.2px;
+    background:linear-gradient(120deg,#171323 10%,#8b5cf6 48%,#c084fc 90%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+}
+
+.hero p{
+    margin-top:13px;
+    color:var(--muted);
+    font-size:15px;
+    font-weight:550;
+}
+
+.search-box{
+    width:min(720px,calc(100% - 30px));
+    margin:5px auto 30px;
+    position:relative;
+}
+
+.search-box::before{
+    content:"⌕";
+    position:absolute;
+    left:17px;
+    top:50%;
+    transform:translateY(-50%);
+    color:#8b5cf6;
+    font-size:23px;
+    z-index:2;
+}
+
+.search-box input{
+    width:100%;
+    height:54px;
+    border:1px solid rgba(139,92,246,.16);
+    outline:none;
+    border-radius:18px;
+    padding:0 18px 0 48px;
+    background:rgba(255,255,255,.80);
+    backdrop-filter:blur(15px);
+    color:var(--text);
+    box-shadow:0 12px 35px rgba(74,44,120,.08);
+    transition:.25s ease;
+}
+
+.search-box input::placeholder{
+    color:#9a94aa;
+}
+
+.search-box input:focus{
+    border-color:rgba(139,92,246,.50);
+    box-shadow:
+        0 0 0 4px rgba(139,92,246,.09),
+        0 15px 40px rgba(74,44,120,.12);
+}
+
+.gallery{
+    width:min(1200px,calc(100% - 28px));
+    margin:0 auto 60px;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:18px;
+}
+
+.wallpaper-card{
+    position:relative;
+    min-height:360px;
+    overflow:hidden;
+    border-radius:24px;
+    background:var(--card);
+    border:1px solid rgba(255,255,255,.8);
+    box-shadow:var(--shadow);
+    cursor:pointer;
+    transition:transform .3s ease,box-shadow .3s ease;
+}
+
+.wallpaper-card:hover{
+    transform:translateY(-7px);
+    box-shadow:0 24px 55px rgba(66,35,120,.20);
+}
+
+.wallpaper-card img{
+    width:100%;
+    height:100%;
+    min-height:360px;
+    display:block;
+    object-fit:cover;
+    transition:transform .5s ease;
+}
+
+.wallpaper-card:hover img{
+    transform:scale(1.045);
+}
+
+.wallpaper-card::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:
+        linear-gradient(
+            to bottom,
+            transparent 50%,
+            rgba(0,0,0,.72) 100%
+        );
+}
+
+.card-info{
+    position:absolute;
+    z-index:2;
+    left:14px;
+    right:14px;
+    bottom:14px;
+    color:white;
+}
+
+.card-info h3{
+    font-size:16px;
+    font-weight:850;
+    margin-bottom:7px;
+    text-shadow:0 2px 10px rgba(0,0,0,.5);
+}
+
+.category-pill{
+    display:inline-flex;
+    align-items:center;
+    padding:5px 9px;
+    border-radius:999px;
+    background:rgba(139,92,246,.88);
+    color:white;
+    font-size:10px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    backdrop-filter:blur(10px);
+}
+
+.tap-hint{
+    position:absolute;
+    z-index:3;
+    top:12px;
+    right:12px;
+    padding:7px 10px;
+    border-radius:999px;
+    background:rgba(0,0,0,.32);
+    backdrop-filter:blur(10px);
+    color:white;
+    font-size:11px;
+    font-weight:700;
+    opacity:0;
+    transform:translateY(-5px);
+    transition:.25s ease;
+}
+
+.wallpaper-card:hover .tap-hint{
+    opacity:1;
+    transform:translateY(0);
+}
+
+.message{
+    grid-column:1/-1;
+    min-height:250px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    color:var(--muted);
+    font-weight:650;
+    gap:15px;
+}
+
+.spinner{
+    width:35px;
+    height:35px;
+    border-radius:50%;
+    border:3px solid rgba(139,92,246,.16);
+    border-top-color:var(--purple);
+    animation:spin .8s linear infinite;
+}
+
+@keyframes spin{
+    to{transform:rotate(360deg);}
+}
+
+/* VIEWER */
+
+.viewer{
+    position:fixed;
+    inset:0;
+    z-index:500;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:rgba(4,3,9,.88);
+    backdrop-filter:blur(18px);
+}
+
+.viewer.active{
+    display:flex;
+}
+
+.viewer-content{
+    position:relative;
+    width:min(440px,96vw);
+    max-height:94vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.viewer img{
+    max-width:100%;
+    max-height:72vh;
+    object-fit:contain;
+    border-radius:22px;
+    box-shadow:0 25px 80px rgba(0,0,0,.55);
+}
+
+.close-viewer{
+    position:absolute;
+    top:-8px;
+    right:-8px;
+    width:42px;
+    height:42px;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:50%;
+    background:rgba(0,0,0,.58);
+    color:white;
+    font-size:22px;
+    z-index:5;
+}
+
+.viewer-title{
+    width:100%;
+    margin-top:15px;
+    color:white;
+    font-size:18px;
+    font-weight:850;
+    text-align:center;
+}
+
+.viewer-actions{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-top:14px;
+}
+
+.viewer-actions button{
+    border:1px solid rgba(255,255,255,.12);
+    color:white;
+    background:rgba(255,255,255,.10);
+    backdrop-filter:blur(12px);
+    border-radius:13px;
+    padding:10px 14px;
+    font-weight:750;
+    transition:.2s;
+}
+
+.viewer-actions button:hover{
+    background:rgba(139,92,246,.55);
+}
+
+.download-btn{
+    background:linear-gradient(135deg,#8b5cf6,#a855f7)!important;
+    border:0!important;
+}
+
+.comments{
+    width:100%;
+    margin-top:16px;
+    max-height:150px;
+    overflow:auto;
+}
+
+.comments input{
+    width:100%;
+    height:43px;
+    border:1px solid rgba(255,255,255,.15);
+    border-radius:12px;
+    padding:0 13px;
+    outline:none;
+    color:white;
+    background:rgba(255,255,255,.08);
+}
+
+.comments input::placeholder{
+    color:#aaa4b4;
+}
+
+/* MODAL */
+
+.modal{
+    position:fixed;
+    inset:0;
+    z-index:1000;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:rgba(5,3,12,.72);
+    backdrop-filter:blur(14px);
+}
+
+.modal.active{
+    display:flex;
+}
+
+.modal-box{
+    width:min(440px,100%);
+    padding:25px;
+    border-radius:26px;
+    background:rgba(255,255,255,.94);
+    border:1px solid rgba(255,255,255,.8);
+    box-shadow:0 30px 80px rgba(0,0,0,.28);
+}
+
+.modal-box h2{
+    font-size:24px;
+    font-weight:900;
+    margin-bottom:5px;
+}
+
+.modal-box p{
+    color:var(--muted);
+    font-size:13px;
+    margin-bottom:20px;
+}
+
+.modal-box input{
+    width:100%;
+    height:48px;
+    border:1px solid rgba(139,92,246,.16);
+    border-radius:13px;
+    outline:none;
+    padding:0 13px;
+    margin-bottom:12px;
+    background:#faf9ff;
+    color:#211a2c;
+}
+
+.modal-box input:focus{
+    border-color:var(--purple);
+    box-shadow:0 0 0 4px rgba(139,92,246,.08);
+}
+
+.modal-actions{
+    display:flex;
+    gap:10px;
+    margin-top:5px;
+}
+
+.modal-actions button{
+    flex:1;
+    height:47px;
+    border-radius:13px;
+    border:0;
+    font-weight:800;
+}
+
+.cancel-btn{
+    background:#eeeaf7;
+    color:#5b526b;
+}
+
+.confirm-upload{
+    color:white;
+    background:linear-gradient(135deg,#8b5cf6,#a855f7);
+    box-shadow:0 10px 25px rgba(139,92,246,.25);
+}
+
+/* DARK */
+
+@media(prefers-color-scheme:dark){
+
+    :root{
+        --bg:#07060c;
+        --bg2:#0d0b14;
+        --card:rgba(19,16,29,.88);
+        --text:#f8f6ff;
+        --muted:#aaa4b8;
+        --border:rgba(192,132,252,.15);
+    }
+
+    body{
+        background:
+            radial-gradient(circle at 15% 0%,rgba(139,92,246,.18),transparent 28%),
+            radial-gradient(circle at 90% 10%,rgba(192,132,252,.12),transparent 28%),
+            #07060c;
+    }
+
+    header{
+        background:rgba(10,8,16,.72);
+        border-bottom-color:rgba(255,255,255,.07);
+    }
+
+    .logo{
+        color:#fff;
+    }
+
+    .back-btn,
+    .upload-btn{
+        background:rgba(255,255,255,.07);
+        color:#eee9f7;
+        border-color:rgba(255,255,255,.09);
+    }
+
+    .upload-btn{
+        background:linear-gradient(135deg,#8b5cf6,#a855f7);
+        color:white;
+    }
+
+    .hero h1{
+        background:linear-gradient(120deg,#fff 10%,#b58cff 55%,#e0c2ff 90%);
+        -webkit-background-clip:text;
+        background-clip:text;
+    }
+
+    .search-box input{
+        background:rgba(255,255,255,.055);
+        border-color:rgba(255,255,255,.09);
+        color:white;
+    }
+
+    .modal-box{
+        background:rgba(18,15,28,.97);
+        color:white;
+        border-color:rgba(255,255,255,.08);
+    }
+
+    .modal-box input{
+        background:rgba(255,255,255,.06);
+        color:white;
+        border-color:rgba(255,255,255,.09);
+    }
+
+    .cancel-btn{
+        background:rgba(255,255,255,.08);
+        color:#ddd7e8;
+    }
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+
+    .gallery{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+    .wallpaper-card,
+    .wallpaper-card img{
+        min-height:320px;
+    }
+}
+
+@media(max-width:650px){
+
+    header{
+        height:68px;
+        padding:0 11px;
+    }
+
+    .logo{
+        font-size:17px;
+    }
+
+    .back-btn,
+    .upload-btn{
+        padding:8px 10px;
+        font-size:12px;
+    }
+
+    .hero{
+        padding:42px 18px 20px;
+    }
+
+    .hero h1{
+        font-size:36px;
+        letter-spacing:-1.5px;
+    }
+
+    .hero p{
+        font-size:13px;
+    }
+
+    .search-box{
+        width:calc(100% - 24px);
+        margin-bottom:22px;
+    }
+
+    .gallery{
+        width:calc(100% - 20px);
+        grid-template-columns:repeat(2,1fr);
+        gap:11px;
+    }
+
+    .wallpaper-card,
+    .wallpaper-card img{
+        min-height:285px;
+    }
+
+    .wallpaper-card{
+        border-radius:18px;
+    }
+
+    .card-info{
+        left:10px;
+        right:10px;
+        bottom:10px;
+    }
+
+    .card-info h3{
+        font-size:13px;
+    }
+
+    .tap-hint{
+        opacity:1;
+        transform:none;
+        font-size:9px;
+        padding:5px 7px;
+    }
+
+    .viewer{
+        padding:12px;
+    }
+
+    .viewer img{
+        max-height:67vh;
+        border-radius:18px;
+    }
+
+    .modal-box{
+        padding:21px;
+        border-radius:22px;
+    }
+}
+
+@media(max-width:380px){
+
+    .logo{
+        font-size:15px;
+    }
+
+    .back-btn,
+    .upload-btn{
+        font-size:10px;
+        padding:7px 8px;
+    }
+
+    .wallpaper-card,
+    .wallpaper-card img{
+        min-height:250px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+    <button class="back-btn" onclick="history.back()">
+        ← Back
+    </button>
+
+    <div class="logo">
+        Wallora<span> • Mobile</span>
+    </div>
+
+    <button
+        id="uploadBtn"
+        class="upload-btn"
+        onclick="openUpload()"
+        style="display:none;"
+    >
+        ＋ Upload
+    </button>
+
+</header>
+
+
+<section class="hero">
+
+    <h1>Mobile Wallpapers</h1>
+
+    <p>
+        Premium wallpapers crafted to make your phone look different.
+    </p>
+
+</section>
+
+
+<div class="search-box">
+
+    <input
+        id="searchInput"
+        type="search"
+        placeholder="Search wallpapers..."
+        oninput="renderWallpapers()"
+    >
+
+</div>
+
+
+<main id="gallery" class="gallery">
+
+    <div class="message">
+
+        <div class="spinner"></div>
+
+        Loading wallpapers...
+
+    </div>
+
+</main>
+
+
+<!-- VIEWER -->
+
+<div id="viewer" class="viewer">
+
+    <div class="viewer-content">
+
+        <button
+            class="close-viewer"
+            onclick="closeViewer()"
+        >
+            ×
+        </button>
+
+        <img
+            id="viewerImage"
+            src=""
+            alt="Wallpaper"
+        >
+
+        <div
+            id="viewerTitle"
+            class="viewer-title"
+        ></div>
+
+        <div class="viewer-actions">
+
+            <button onclick="toggleLike()">
+                ❤️ <span id="likeCount">0</span>
+            </button>
+
+            <button onclick="focusComment()">
+                💬
+            </button>
+
+            <button
+                class="download-btn"
+                onclick="downloadWallpaper()"
+            >
+                ↓ Download
+            </button>
+
+        </div>
+
+        <div class="comments">
+
+            <input
+                id="commentInput"
+                type="text"
+                placeholder="Write a comment..."
+                onkeydown="commentKey(event)"
+            >
+
+            <div id="commentList"></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- UPLOAD MODAL -->
+
+<div id="uploadModal" class="modal">
+
+    <div class="modal-box">
+
+        <h2>Upload Wallpaper</h2>
+
+        <p>
+            Add a premium mobile wallpaper to Wallora.
+        </p>
+
+        <input
+            id="wallpaperName"
+            type="text"
+            placeholder="Wallpaper name"
+        >
+
+        <input
+            id="wallpaperFile"
+            type="file"
+            accept="image/*"
+        >
+
+        <div class="modal-actions">
+
+            <button
+                class="cancel-btn"
+                onclick="closeUpload()"
+            >
+                Cancel
+            </button>
+
+            <button
+                class="confirm-upload"
+                onclick="uploadWallpaper()"
+            >
+                Upload
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* ================================
+   SUPABASE
+================================ */
+
+const OLD_SUPABASE_URL =
+"https://frsdscguevzqqkzbwxxy.supabase.co";
+
+const OLD_SUPABASE_KEY =
+"sb_publishable_fzXOjFFKz_QXtZagfGXpEA_xgf1cZfN";
+
+const CURRENT_SUPABASE_URL =
+"https://lbvpjnfnhxnhzydjydfn.supabase.co";
+
+const CURRENT_SUPABASE_KEY =
+"sb_publishable_QFKLim7EOGmn-7kjHAONDA_0k-L_YxU";
+
+const oldSupabase =
+window.supabase.createClient(
+    OLD_SUPABASE_URL,
+    OLD_SUPABASE_KEY
+);
+
+const walloraSupabase =
+window.supabase.createClient(
+    CURRENT_SUPABASE_URL,
+    CURRENT_SUPABASE_KEY
+);
+
+
+/* ================================
+   CLOUDINARY
+================================ */
+
+const CLOUDINARY_CLOUD = "igtv8px2";
+
+const CLOUDINARY_PRESET = "wallora_upload";
+
+
+/* ================================
+   OWNER
+================================ */
+
+const OWNER_UID =
+"5244bbae-9306-4c50-857d-feba9a4d0807";
+
+
+/* ================================
+   STATE
+================================ */
+
+let wallpapers = [];
+
+let currentWallpaper = null;
+
+let currentIndex = -1;
+
+let liked = false;
+
+
+/* ================================
+   AUTH / OWNER
+================================ */
+
+async function checkOwner(){
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+        await walloraSupabase.auth.getUser();
+
+        if(
+            !error &&
+            data?.user &&
+            data.user.id === OWNER_UID
+        ){
+
+            document.getElementById(
+                "uploadBtn"
+            ).style.display = "block";
+
+        }else{
+
+            document.getElementById(
+                "uploadBtn"
+            ).style.display = "none";
+
+        }
+
+    }catch(error){
+
+        console.error(
+            "OWNER CHECK ERROR:",
+            error
+        );
+
+    }
+
+}
+
+
+/* ================================
+   LOAD WALLPAPERS
+================================ */
+
+async function loadWallpapers(){
+
+    const gallery =
+    document.getElementById("gallery");
+
+    gallery.innerHTML = `
+        <div class="message">
+            <div class="spinner"></div>
+            Loading wallpapers...
+        </div>
+    `;
+
+    let all = [];
+
+
+    /* OLD DATABASE */
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+        await oldSupabase
+        .from("wallpapers")
+        .select("*")
+        .eq("category","mobile")
+        .order("created_at",{ascending:false});
+
+        if(!error && data){
+
+            all = all.concat(data);
+
+        }
+
+    }catch(error){
+
+        console.log(
+            "OLD DATABASE ERROR:",
+            error
+        );
+
+    }
+
+
+    /* CURRENT DATABASE */
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+        await walloraSupabase
+        .from("wallpapers")
+        .select("*")
+        .eq("category","mobile")
+        .order("created_at",{ascending:false});
+
+        if(!error && data){
+
+            all = all.concat(data);
+
+        }else if(error){
+
+            console.error(
+                "CURRENT DATABASE ERROR:",
+                error
+            );
+
+        }
+
+    }catch(error){
+
+        console.log(
+            "CURRENT DATABASE ERROR:",
+            error
+        );
+
+    }
+
+
+    /* REMOVE DUPLICATES */
+
+    const unique =
+    new Map();
+
+    all.forEach(item=>{
+
+        if(
+            item &&
+            item.url
+        ){
+
+            unique.set(
+                item.url,
+                item
+            );
+
+        }
+
+    });
+
+    wallpapers =
+    Array.from(unique.values());
+
+
+    renderWallpapers();
+
+}
+
+
+/* ================================
+   RENDER
+================================ */
+
+function renderWallpapers(){
+
+    const gallery =
+    document.getElementById("gallery");
+
+    const search =
+    document
+    .getElementById("searchInput")
+    .value
+    .trim()
+    .toLowerCase();
+
+
+    const filtered =
+    wallpapers.filter(item=>{
+
+        const name =
+        String(item.name || "")
+        .toLowerCase();
+
+        return !search ||
+        name.includes(search);
+
+    });
+
+
+    if(!filtered.length){
+
+        gallery.innerHTML = `
+            <div class="message">
+                <div style="font-size:35px;">🖼️</div>
+                <div>No mobile wallpapers found.</div>
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    gallery.innerHTML =
+    filtered.map(
+        (item,index)=>`
+
+        <article
+            class="wallpaper-card"
+            onclick="openViewer(${wallpapers.indexOf(item)})"
+        >
+
+            <img
+                src="${escapeHTML(item.url)}"
+                alt="${escapeHTML(item.name || "Wallpaper")}"
+                loading="lazy"
+            >
+
+            <div class="tap-hint">
+                Tap to view
+            </div>
+
+            <div class="card-info">
+
+                <h3>
+                    ${escapeHTML(
+                        item.name || "Mobile Wallpaper"
+                    )}
+                </h3>
+
+                <span class="category-pill">
+                    Mobile
+                </span>
+
+            </div>
+
+        </article>
+
+        `
+    ).join("");
+
+}
+
+
+/* ================================
+   VIEWER
+================================ */
+
+function openViewer(index){
+
+    if(!wallpapers[index]) return;
+
+    currentIndex = index;
+
+    currentWallpaper =
+    wallpapers[index];
+
+    liked = false;
+
+    document.getElementById(
+        "viewerImage"
+    ).src =
+    currentWallpaper.url;
+
+    document.getElementById(
+        "viewerTitle"
+    ).textContent =
+    currentWallpaper.name ||
+    "Mobile Wallpaper";
+
+    document.getElementById(
+        "likeCount"
+    ).textContent =
+    getLikes(currentWallpaper.url);
+
+    document.getElementById(
+        "viewer"
+    ).classList.add("active");
+
+    document.body.style.overflow =
+    "hidden";
+
+    loadComments();
+
+}
+
+
+function closeViewer(){
+
+    document.getElementById(
+        "viewer"
+    ).classList.remove("active");
+
+    document.body.style.overflow =
+    "";
+
+    currentWallpaper = null;
+
+}
+
+
+function focusComment(){
+
+    const input =
+    document.getElementById(
+        "commentInput"
+    );
+
+    if(input){
+
+        input.focus();
+
+    }
+
+}
+
+
+/* ================================
+   LIKES
+================================ */
+
+function getLikes(url){
+
+    return Number(
+        localStorage.getItem(
+            "wallora_likes_" + url
+        ) || 0
+    );
+
+}
+
+
+function toggleLike(){
+
+    if(!currentWallpaper) return;
+
+    const key =
+    "wallora_likes_" +
+    currentWallpaper.url;
+
+    let count =
+    Number(
+        localStorage.getItem(key) || 0
+    );
+
+    if(!liked){
+
+        count++;
+
+        liked = true;
+
+    }else{
+
+        count =
+        Math.max(0,count-1);
+
+        liked = false;
+
+    }
+
+    localStorage.setItem(
+        key,
+        count
+    );
+
+    document.getElementById(
+        "likeCount"
+    ).textContent =
+    count;
+
+}
+
+
+/* ================================
+   COMMENTS
+================================ */
+
+function getCommentKey(){
+
+    if(!currentWallpaper)
+        return null;
+
+    return (
+        "wallora_comments_" +
+        currentWallpaper.url
+    );
+
+}
+
+
+function loadComments(){
+
+    const list =
+    document.getElementById(
+        "commentList"
+    );
+
+    const key =
+    getCommentKey();
+
+    if(!key){
+
+        list.innerHTML = "";
+
+        return;
+
+    }
+
+    const comments =
+    JSON.parse(
+        localStorage.getItem(key) || "[]"
+    );
+
+    list.innerHTML =
+    comments.map(comment=>`
+
+        <div style="
+            color:#ddd;
+            padding:7px 0;
+            font-size:13px;
+            border-bottom:1px solid rgba(255,255,255,.08);
+        ">
+            ${escapeHTML(comment)}
+        </div>
+
+    `).join("");
+
+}
+
+
+function commentKey(event){
+
+    if(event.key !== "Enter")
+        return;
+
+    const input =
+    document.getElementById(
+        "commentInput"
+    );
+
+    const text =
+    input.value.trim();
+
+    if(!text || !currentWallpaper)
+        return;
+
+    const key =
+    getCommentKey();
+
+    const comments =
+    JSON.parse(
+        localStorage.getItem(key) || "[]"
+    );
+
+    comments.push(text);
+
+    localStorage.setItem(
+        key,
+        JSON.stringify(comments)
+    );
+
+    input.value = "";
+
+    loadComments();
+
+}
+
+
+/* ================================
+   DOWNLOAD
+================================ */
+
+async function downloadWallpaper(){
+
+    if(!currentWallpaper)
+        return;
+
+
+    const downloadKey =
+    "wallora_download_count";
+
+
+    let count =
+    Number(
+        localStorage.getItem(
+            downloadKey
+        ) || 0
+    );
+
+
+    if(count >= 3){
+
+        const {
+            data
+        } =
+        await walloraSupabase
+        .auth.getUser();
+
+
+        if(!data?.user){
+
+            alert(
+                "You have used your 3 free downloads.\n\nPlease login/signup to continue downloading."
+            );
+
+            return;
+
+        }
+
+    }
+
+
+    try{
+
+        const response =
+        await fetch(
+            currentWallpaper.url
+        );
+
+        const blob =
+        await response.blob();
+
+        const blobUrl =
+        URL.createObjectURL(blob);
+
+        const a =
+        document.createElement("a");
+
+        a.href =
+        blobUrl;
+
+        a.download =
+        (
+            currentWallpaper.name ||
+            "wallora-wallpaper"
+        )
+        .replace(/\s+/g,"-")
+        + ".jpg";
+
+        document.body.appendChild(a);
+
+        a.click();
+
+        a.remove();
+
+        URL.revokeObjectURL(blobUrl);
+
+
+        count++;
+
+        localStorage.setItem(
+            downloadKey,
+            count
+        );
+
+    }catch(error){
+
+        console.error(
+            "DOWNLOAD ERROR:",
+            error
+        );
+
+        window.open(
+            currentWallpaper.url,
+            "_blank"
+        );
+
+    }
+
+}
+
+
+/* ================================
+   UPLOAD MODAL
+================================ */
+
+function openUpload(){
+
+    document.getElementById(
+        "uploadModal"
+    ).classList.add("active");
+
+}
+
+
+function closeUpload(){
+
+    document.getElementById(
+        "uploadModal"
+    ).classList.remove("active");
+
+}
+
+
+/* ================================
+   UPLOAD
+   DO NOT REMOVE
+================================ */
+
+async function uploadWallpaper(){
+
+    try{
+
+        const {
+            data:userData,
+            error:userError
+        } =
+        await walloraSupabase.auth.getUser();
+
+
+        if(
+            userError ||
+            !userData?.user
+        ){
+
+            alert(
+                "Please login to Wallora first."
+            );
+
+            return;
+
+        }
+
+
+        if(
+            userData.user.id !== OWNER_UID
+        ){
+
+            alert(
+                "Only Wallora owner can upload."
+            );
+
+            return;
+
+        }
+
+
+        const file =
+        document
+        .getElementById(
+            "wallpaperFile"
+        )
+        .files[0];
+
+
+        const name =
+        document
+        .getElementById(
+            "wallpaperName"
+        )
+        .value
+        .trim();
+
+
+        const category =
+        "mobile";
+
+
+        if(!file){
+
+            alert(
+                "Please select a wallpaper."
+            );
+
+            return;
+
+        }
+
+
+        if(!name){
+
+            alert(
+                "Please enter wallpaper name."
+            );
+
+            return;
+
+        }
+
+
+        if(
+            file.size >
+            15 * 1024 * 1024
+        ){
+
+            alert(
+                "Maximum file size is 15MB."
+            );
+
+            return;
+
+        }
+
+
+        const formData =
+        new FormData();
+
+
+        formData.append(
+            "file",
+            file
+        );
+
+
+        formData.append(
+            "upload_preset",
+            CLOUDINARY_PRESET
+        );
+
+
+        formData.append(
+            "folder",
+            "wallora/mobile"
+        );
+
+
+        const uploadResponse =
+        await fetch(
+            `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`,
+            {
+                method:"POST",
+                body:formData
+            }
+        );
+
+
+        if(!uploadResponse.ok){
+
+            let cloudError =
+            "Cloudinary upload failed.";
+
+            try{
+
+                const cloudData =
+                await uploadResponse.json();
+
+                if(
+                    cloudData?.error?.message
+                ){
+
+                    cloudError =
+                    cloudData.error.message;
+
+                }
+
+            }catch(e){}
+
+            throw new Error(
+                cloudError
+            );
+
+        }
+
+
+        const uploaded =
+        await uploadResponse.json();
+
+
+        if(!uploaded.secure_url){
+
+            throw new Error(
+                "Cloudinary URL not received."
+            );
+
+        }
+
+
+        const {
+            error:dbError
+        } =
+        await walloraSupabase
+        .from("wallpapers")
+        .insert({
+
+            name:name,
+
+            category:"mobile",
+
+            url:uploaded.secure_url
+
+        });
+
+
+        if(dbError){
+
+            console.error(
+                "CURRENT DATABASE ERROR:",
+                dbError
+            );
+
+            alert(
+                "Database Error:\n\n" +
+                dbError.message
+            );
+
+            return;
+
+        }
+
+
+        alert(
+            "✅ Mobile wallpaper uploaded successfully!"
+        );
+
+
+        document.getElementById(
+            "wallpaperName"
+        ).value = "";
+
+
+        document.getElementById(
+            "wallpaperFile"
+        ).value = "";
+
+
+        closeUpload();
+
+
+        await loadWallpapers();
+
+
+    }catch(error){
+
+        console.error(
+            "UPLOAD ERROR:",
+            error
+        );
+
+        alert(
+            "Upload failed:\n\n" +
+            error.message
+        );
+
+    }
+
+}
+
+
+/* ================================
+   ESCAPE HTML
+================================ */
+
+function escapeHTML(value){
+
+    return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+/* ================================
+   ESC KEY
+================================ */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        if(event.key === "Escape"){
+
+            closeViewer();
+
+            closeUpload();
+
+        }
+
+    }
+);
+
+
+/* ================================
+   MODAL CLICK OUTSIDE
+================================ */
+
+document.getElementById(
+    "uploadModal"
+).addEventListener(
+    "click",
+    function(event){
+
+        if(
+            event.target === this
+        ){
+
+            closeUpload();
+
+        }
+
+    }
+);
+
+
+/* ================================
+   AUTH STATE
+================================ */
+
+walloraSupabase.auth.onAuthStateChange(
+    function(){
+
+        setTimeout(
+            checkOwner,
+            100
+        );
+
+    }
+);
+
+
+/* ================================
+   START
+================================ */
+
+checkOwner();
+
+loadWallpapers();
+
+</script>
+
+</body>
+</html>
